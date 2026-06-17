@@ -1,0 +1,38 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: gRPC Client Gateway
+  description: Expose REST endpoints that call upstream gRPC services
+
+gateway:
+  port: 8080
+
+cors:
+  enabled: true
+  allow_origins: ["*"]
+  allow_methods: [GET, POST, OPTIONS]
+  allow_headers: [Origin, Authorization, Content-Type]
+
+grpc:
+  catalog:
+    - ./grpc/catalog.pb
+
+telemetry:
+  logging:
+    level: INFO
+    stdout: true
+  usage:
+    enabled: false
+
+routes:
+  - path: /flights
+    method: GET
+    query_strings:
+      forward: [lat, lon]
+    backend:
+      type: grpc
+      host: grpc-backend:4242
+      path: /flight_finder.Flights/FindFlight
+      input_mapping:
+        lat: where.latitude
+        lon: where.longitude

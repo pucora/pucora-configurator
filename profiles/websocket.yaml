@@ -1,0 +1,46 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: WebSocket Proxy
+  description: WebSocket endpoints with optional JWT auth on upgrade
+
+gateway:
+  port: 8080
+
+telemetry:
+  logging:
+    level: INFO
+    stdout: true
+  usage:
+    enabled: false
+
+routes:
+  - path: /ws/echo
+    method: GET
+    websocket:
+      direct_communication: true
+      max_message_size: 4096
+    backend:
+      type: websocket
+      host: ws://localhost:8081
+      path: /echo
+
+  - path: /ws/secure
+    method: GET
+    auth:
+      jwt:
+        alg: HS256
+        jwk_url: http://localhost:8081/jwk/symmetric
+        audience: [http://api.example.com]
+        roles: [user]
+        roles_key: roles
+        disable_jwk_security: true
+        cache: true
+    websocket:
+      direct_communication: true
+      max_message_size: 4096
+      input_headers: [Authorization]
+    backend:
+      type: websocket
+      host: ws://localhost:8081
+      path: /echo

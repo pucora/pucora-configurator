@@ -1,0 +1,70 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: GraphQL Gateway
+  description: GraphQL query adapter and transparent proxy with CORS
+
+gateway:
+  port: 8080
+
+cors:
+  enabled: true
+  allow_origins: ["*"]
+  allow_methods: [POST, GET, OPTIONS]
+  allow_headers: [Origin, Authorization, Content-Type]
+
+compose:
+  enabled: true
+  mock_backend: true
+
+telemetry:
+  logging:
+    level: INFO
+    stdout: true
+  usage:
+    enabled: false
+
+routes:
+  - path: /hero/{episode}
+    method: GET
+    backend:
+      type: graphql
+      host: http://mock-backend:4000
+      path: /graphql
+      method: GET
+      graphql_type: query
+      query_path: /etc/velonetics/graphql/queries/hero.graphql
+      operation_name: Hero
+      graphql_variables:
+        episode: "{episode}"
+        withFriends: false
+
+  - path: /review/{id_show}
+    method: POST
+    headers:
+      forward: [Content-Type]
+    backend:
+      type: graphql
+      host: http://mock-backend:4000
+      path: /graphql
+      method: POST
+      graphql_type: mutation
+      query_path: /etc/velonetics/graphql/mutations/review.graphql
+      operation_name: CreateReviewForEpisode
+      graphql_variables:
+        ep: JEDI
+        review:
+          stars: 3
+          commentary: meh
+
+  - path: /graphql
+    method: POST
+    headers:
+      forward: [Content-Type, Authorization]
+    query_strings:
+      forward: [query, operationName, variables]
+    backend:
+      type: http
+      host: http://mock-backend:4000
+      path: /graphql
+      method: POST

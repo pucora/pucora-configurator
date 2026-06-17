@@ -1,0 +1,33 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: SOAP Gateway
+  description: SOAP/XML backend with response mapping
+
+gateway:
+  port: 8080
+
+compose:
+  enabled: true
+  mock_backend: true
+
+telemetry:
+  logging:
+    level: INFO
+    stdout: true
+  usage:
+    enabled: false
+
+routes:
+  - path: /country/{country}
+    method: GET
+    backend:
+      type: soap
+      host: http://mock-backend:8081
+      path: /CountryInfoService.wso
+      method: POST
+      soap_template: /etc/velonetics/soap/flag_request.xml
+      target: Envelope.Body.CountryFlagResponse
+      mapping:
+        CountryFlagResult: flag_url
+      deny: ["-m"]

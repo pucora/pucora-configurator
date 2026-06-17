@@ -1,0 +1,33 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: NATS Pub/Sub Gateway
+  description: Publish and subscribe via NATS subjects
+
+gateway:
+  port: 8080
+
+cors:
+  enabled: true
+  allow_origins: ["*"]
+  allow_methods: [GET, POST, OPTIONS]
+
+env:
+  NATS_SERVER_URL: nats://localhost:4222
+
+routes:
+  - path: /publish
+    method: POST
+    backend:
+      type: nats
+      host: nats://localhost:4222
+      path: /ignored
+      topic: events
+
+  - path: /subscribe
+    method: GET
+    backend:
+      type: nats
+      host: nats://localhost:4222
+      path: /ignored
+      subscription: events

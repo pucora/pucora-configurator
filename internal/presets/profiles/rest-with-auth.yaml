@@ -1,0 +1,53 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: REST API with JWT Auth
+  description: HTTP proxy with JWT validation, CORS, rate limiting, and header forwarding
+
+gateway:
+  port: 8080
+  timeout: 5s
+
+cors:
+  enabled: true
+  allow_origins:
+    - http://localhost:3000
+  allow_methods: [GET, POST, PUT, DELETE, OPTIONS]
+  allow_headers: [Origin, Authorization, Content-Type]
+  allow_credentials: true
+
+telemetry:
+  logging:
+    level: INFO
+    stdout: true
+  metrics:
+    enabled: true
+  usage:
+    enabled: false
+
+routes:
+  - path: /protected/{path}
+    method: GET
+    headers:
+      forward: [Authorization, Content-Type]
+    auth:
+      jwt:
+        alg: RS256
+        jwk_url: https://your-idp.example.com/.well-known/jwks.json
+        audience: [https://api.example.com]
+        roles: [user, admin]
+        roles_key: roles
+    rate_limit:
+      max_rate: 100
+      every: 1m
+    backend:
+      type: http
+      host: http://localhost:8000
+      path: /{path}
+
+  - path: /public/health
+    method: GET
+    backend:
+      type: http
+      host: http://localhost:8000
+      path: /health

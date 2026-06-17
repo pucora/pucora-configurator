@@ -1,0 +1,27 @@
+apiVersion: configurator.velonetics.io/v1
+kind: GatewayProfile
+metadata:
+  name: SSE Streaming Gateway
+  description: Server-sent events / streaming with no-op encoding
+
+gateway:
+  port: 8080
+  write_timeout: 0s
+
+telemetry:
+  logging:
+    level: INFO
+    stdout: true
+  usage:
+    enabled: false
+
+routes:
+  - path: /events
+    method: GET
+    timeout: 30s
+    output_encoding: no-op
+    backend:
+      type: http
+      host: http://localhost:8000
+      path: /events
+      encoding: no-op
