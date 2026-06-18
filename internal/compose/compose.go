@@ -75,6 +75,16 @@ func ShouldGenerate(p *profile.Profile, flag bool) bool {
 }
 
 func Write(outputDir string, p *profile.Profile, env map[string]string) error {
+	content := Render(p, env)
+	path := filepath.Join(outputDir, "docker-compose.yml")
+	return os.WriteFile(path, []byte(content), 0o644)
+}
+
+func WriteToString(p *profile.Profile, env map[string]string) (string, error) {
+	return Render(p, env), nil
+}
+
+func Render(p *profile.Profile, env map[string]string) string {
 	req := Detect(p)
 	image := defaultImage
 	mockBackend := req.MockBackend || req.MockWebhook
@@ -110,9 +120,7 @@ func Write(outputDir string, p *profile.Profile, env map[string]string) error {
 	}
 
 	sb.WriteString(veloneticsService(image, p, env, req, exposeMetrics))
-
-	path := filepath.Join(outputDir, "docker-compose.yml")
-	return os.WriteFile(path, []byte(sb.String()), 0o644)
+	return sb.String()
 }
 
 func veloneticsService(image string, p *profile.Profile, env map[string]string, req Requirements, exposeMetrics bool) string {

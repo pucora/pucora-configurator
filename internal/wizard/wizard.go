@@ -42,9 +42,13 @@ func (w *Wizard) Run() (*profile.Profile, error) {
 	fmt.Println("  2) REST with JWT auth")
 	fmt.Println("  3) Kafka pub/sub")
 	fmt.Println("  4) NATS pub/sub")
-	fmt.Println("  5) WebSocket proxy")
-	fmt.Println("  6) gRPC client")
-	fmt.Println("  7) SSE streaming")
+	fmt.Println("  5) RabbitMQ pub/sub")
+	fmt.Println("  6) WebSocket proxy")
+	fmt.Println("  7) gRPC client")
+	fmt.Println("  8) GraphQL adapter")
+	fmt.Println("  9) SOAP backend")
+	fmt.Println(" 10) SSE streaming")
+	fmt.Println(" 11) Async Kafka agent")
 	choice := w.promptInt("Selection", 1)
 
 	switch choice {
@@ -57,13 +61,25 @@ func (w *Wizard) Run() (*profile.Profile, error) {
 	case 4:
 		w.configureNATS(p)
 	case 5:
-		w.configureWebSocket(p)
+		w.configureRabbit(p)
 	case 6:
-		w.configureGRPC(p)
+		w.configureWebSocket(p)
 	case 7:
+		w.configureGRPC(p)
+	case 8:
+		w.configureGraphQL(p)
+	case 9:
+		w.configureSOAP(p)
+	case 10:
 		w.configureSSE(p)
+	case 11:
+		w.configureAsyncKafka(p)
 	default:
 		return nil, fmt.Errorf("invalid selection %d", choice)
+	}
+
+	for w.promptYesNo("Add another route manually? (opens REST proxy)", false) {
+		w.configureREST(p, false)
 	}
 
 	profile.ApplyDefaults(p)
@@ -101,12 +117,29 @@ func (w *Wizard) configureREST(p *profile.Profile, withAuth bool) {
 		}
 	}
 
-	p.Routes = []profile.Route{route}
+	p.Routes = append(p.Routes, route)
 
 	if w.promptYesNo("Add POST route with same backend?", true) {
 		post := route
 		post.Method = "POST"
 		p.Routes = append(p.Routes, post)
+	}
+}
+
+func (w *Wizard) configureRabbit(p *profile.Profile) {
+	server := w.prompt("RabbitMQ URL", "amqp://guest:guest@localhost:5672/")
+	queue := w.prompt("Queue name", "events")
+
+	p.Env = map[string]string{"RABBIT_SERVER_URL": server}
+	p.Routes = []profile.Route{
+		{
+			Path: "/publish", Method: "POST",
+			Backend: profile.Backend{Type: "rabbit", Host: server, Path: "/ignored", Topic: queue},
+		},
+		{
+			Path: "/subscribe", Method: "GET",
+			Backend: profile.Backend{Type: "rabbit", Host: server, Path: "/ignored", Subscription: queue},
+		},
 	}
 }
 
@@ -182,6 +215,60 @@ func (w *Wizard) configureSSE(p *profile.Profile) {
 	p.Routes = []profile.Route{{
 		Path: path, Method: "GET", Timeout: "30s", OutputEncoding: "no-op",
 		Backend: profile.Backend{Type: "http", Host: backendHost, Path: path, Encoding: "no-op"},
+	}}
+}
+
+func (w *Wizard) configureGraphQL(p *profile.Profile) {
+	backendHost := w.prompt("GraphQL backend URL", "http://localhost:4000")
+	path := w.prompt("Gateway path", "/hero/{episode}")
+	queryPath := w.prompt("Query file path", "/etc/velonetics/graphql/queries/hero.graphql")
+
+	p.Routes = []profile.Route{{
+		Path: path, Method: "GET",
+		QueryStrings: &profile.QueryStrings{Forward: []string{"episode"}},
+		Backend: profile.Backend{
+			Type: "graphql", Host: backendHost, Path: "/graphql",
+			GraphQLType: "query", QueryPath: queryPath,
+		},
+	}}
+}
+
+func (w *Wizard) configureSOAP(p *profile.Profile) {
+	backendHost := w.prompt("SOAP backend URL", "http://localhost:8081")
+	path := w.prompt("Gateway path", "/country/{country}")
+	template := w.prompt("SOAP template path", "/etc/velonetics/soap/request.xml")
+
+	p.Routes = []profile.Route{{
+		Path: path, Method: "GET",
+		QueryStrings: &profile.QueryStrings{Forward: []string{"country"}},
+		Backend: profile.Backend{
+			Type: "soap", Host: backendHost, Path: "/Service.wso",
+			SoapTemplate: template,
+		},
+	}}
+}
+
+func (w *Wizard) configureAsyncKafka(p *profile.Profile) {
+	brokers := w.prompt("Kafka brokers", "localhost:9092")
+	topic := w.prompt("Consumer topic", "orders")
+	groupID := w.prompt("Consumer group ID", "order-processor")
+	webhookHost := w.prompt("Webhook host", "http://localhost:9000")
+	webhookPath := w.prompt("Webhook path", "/webhook")
+
+	p.AsyncAgents = []profile.AsyncAgent{{
+		Name: "kafka-webhook",
+		Consumer: profile.AsyncConsumer{
+			Topic: topic, Workers: 2, Timeout: "5s",
+		},
+		Backend: profile.AsyncBackend{
+			Host: webhookHost, Path: webhookPath, Method: "POST",
+		},
+		Connection: &profile.AsyncConnection{
+			MaxRetries: 3, BackoffStrategy: "exponential", HealthInterval: "30s",
+		},
+		Kafka: &profile.AsyncKafka{
+			Brokers: splitCSV(brokers), GroupID: groupID,
+		},
 	}}
 }
 

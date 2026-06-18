@@ -4,7 +4,39 @@ A configuration tool that turns a simple YAML profile into a complete [Velonetic
 
 **No more hand-writing `extra_config` namespaces or remembering `disable_host_sanitize` rules.**
 
-## Quick start
+## Visual UI (recommended)
+
+A standalone web app lets you build configs with forms, drag-and-drop routes, and live preview — no YAML required.
+
+```bash
+# Terminal 1: API server
+make dev-api
+
+# Terminal 2: Web UI (http://localhost:5173)
+make dev-web
+```
+
+Or run everything with Docker:
+
+```bash
+make docker-up
+# Open http://localhost:3000
+```
+
+The UI provides:
+- Preset gallery — one-click starting points
+- Drag-and-drop route reordering
+- Component palette — REST, JWT, Kafka, WebSocket, gRPC, GraphQL, SOAP, SSE, cloud pub/sub
+- Guided forms with header chips and CORS presets
+- JWT / rate-limit toggles per route
+- Live `velonetics.json` preview with ZIP download
+- Import YAML or `velonetics.json` (reverse import)
+- Route search, duplicate, and per-route curl examples
+- Advisory warnings (gRPC catalog, JWT headers, streaming timeouts)
+- Autosave draft to browser localStorage
+- Saved config list on publish panel (GET/POST API)
+
+## CLI quick start
 
 ```bash
 # Build
@@ -13,7 +45,8 @@ make build
 # Interactive wizard
 ./bin/velonetics-config init -o my-profile.yaml
 
-# Or generate with docker-compose for local dev
+# Or pick a preset
+./bin/velonetics-config presets list
 ./bin/velonetics-config presets apply kafka-pubsub -g ./output --compose
 docker compose -f ./output/docker-compose.yml up
 
@@ -22,6 +55,24 @@ docker compose -f ./output/docker-compose.yml up
 
 # Validate before generating
 ./bin/velonetics-config validate -f my-profile.yaml
+./bin/velonetics-config validate -f my-profile.yaml --json
+
+# Import existing velonetics.json back to profile YAML
+./bin/velonetics-config import -f ./output/velonetics.json -o profile.yaml
+
+# Compare two profiles
+./bin/velonetics-config diff --file-a profile.yaml --file-b profile-v2.yaml
+
+# Advisory warnings (beyond strict validation)
+./bin/velonetics-config doctor -f my-profile.yaml
+
+# Watch profile and regenerate on save
+./bin/velonetics-config watch -f my-profile.yaml -o ./output
+
+# Push/pull from config store API
+./bin/velonetics-config config push -f my-profile.yaml -n prod
+./bin/velonetics-config config pull prod -o ./output
+./bin/velonetics-config config list
 ```
 
 Run the gateway:
@@ -105,16 +156,83 @@ velonetics-config presets apply kafka-pubsub -o profile.yaml
 velonetics-config presets apply kafka-pubsub -g ./output --compose
 ```
 
+## Config store API (GET / POST)
+
+Publish and pull gateway config over HTTP so CI, gateways, or other tools can apply it without manual downloads.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/config` or `/api/config/{name}` | Save profile → generates and stores `velonetics.json` |
+| `GET` | `/api/config/{name}` | Full bundle (profile + velonetics.json + env) |
+| `GET` | `/api/config/{name}/velonetics.json` | **Raw gateway config** — use this to apply |
+| `GET` | `/api/config/{name}?format=yaml` | Profile YAML only |
+| `GET` | `/api/configs` | List saved config names |
+| `POST` | `/api/import` | Import profile YAML |
+| `POST` | `/api/import-json` | Import `velonetics.json` → profile |
+| `POST` | `/api/doctor` | Advisory warnings for a profile |
+
+### POST — save config
+
+```bash
+curl -X POST http://localhost:8081/api/config/prod \
+  -H "Content-Type: application/json" \
+  -d @- <<'EOF'
+{
+  "name": "prod",
+  "profile": { ... },
+  "compose": false
+}
+EOF
+```
+
+Or upload raw `velonetics.json`:
+
+```bash
+curl -X POST http://localhost:8081/api/config/prod \
+  -H "Content-Type: application/json" \
+  -d '{"velonetics_json": {"version": 3, "port": 8080, "endpoints": []}}'
+```
+
+### GET — pull config for gateway
+
+```bash
+# Fetch velonetics.json and run gateway
+curl -s http://localhost:8081/api/config/prod/velonetics.json -o velonetics.json
+velonetics check -c velonetics.json
+velonetics run -c velonetics.json
+```
+
+### Environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `CONFIG_STORE_PATH` | Directory for persisted configs (default: `./data`) |
+| `CONFIG_API_KEY` | Optional API key — send as `X-API-Key` header on GET/POST |
+| `PUBLIC_BASE_URL` | Base URL returned in publish response links |
+
+The UI builder includes **POST — Save to API** and **GET — Load from API** with the gateway pull URL displayed.
+
 ## Commands
 
 | Command | Description |
 |---------|-------------|
 | `init` | Interactive wizard — choose pattern, answer prompts, get a profile |
+| `init --from-preset graphql` | Start from a preset instead of the wizard |
+| `init --edit` | Open profile in `$EDITOR` after creation |
 | `generate -f profile.yaml -o ./output` | Produce `velonetics.json` and `.env` |
+| `generate --stdout` | Print `velonetics.json` to stdout |
+| `generate --check` | Run `velonetics check` after generate (if on PATH) |
 | `generate --compose` | Also produce `docker-compose.yml` for local dev |
 | `validate -f profile.yaml` | Check profile without generating |
+| `validate --json` | Machine-readable validation + advisories |
+| `import -f velonetics.json -o profile.yaml` | Reverse-import gateway JSON to profile |
+| `diff --file-a a.yaml --file-b b.yaml` | Compare profiles and generated output |
+| `doctor -f profile.yaml` | Show advisory warnings |
+| `watch -f profile.yaml` | Regenerate when profile file changes |
+| `config push/pull/list` | Sync with the config store HTTP API |
 | `presets list` | Show built-in presets |
 | `presets apply <name>` | Copy preset and/or generate config |
+| `presets apply <name> --edit` | Save preset and open in `$EDITOR` |
 
 ## What gets generated
 
@@ -169,13 +287,19 @@ The generator automatically sets:
 
 ```
 velonetics-configurator/
-├── cmd/velonetics-config/     # CLI entrypoint
+├── cmd/
+│   ├── velonetics-config/     # CLI entrypoint
+│   └── velonetics-config-api/ # REST API for web UI
+├── web/                       # React visual configurator
+├── deploy/                    # Docker compose + Dockerfiles
 ├── internal/
+│   ├── api/                   # HTTP handlers
+│   ├── catalog/               # Field metadata for guided forms
 │   ├── profile/               # YAML profile schema + validation
 │   ├── generator/             # Profile → velonetics.json
 │   ├── compose/               # docker-compose.yml generator
 │   ├── presets/               # Embedded preset profiles
-│   ├── wizard/                # Interactive setup
+│   ├── wizard/                # Interactive CLI setup
 │   └── cli/                   # Cobra commands
 ├── profiles/                  # Example profiles (source for presets)
 └── Makefile
@@ -185,11 +309,26 @@ velonetics-configurator/
 
 ```bash
 make test
-make build
+make build-all
+
+# Web UI development
+make dev-api    # API on :8081
+make dev-web    # UI on :5173 (proxies /api to :8081)
 
 # After editing profiles/*.yaml, sync embedded presets:
 make presets
 ```
+
+## Deployment
+
+```bash
+docker compose -f deploy/docker-compose.yml up --build
+```
+
+- **Web** — nginx on port 3000, proxies `/api` to the API service
+- **API** — Go server on port 8081
+- Set `ALLOWED_ORIGINS` on the API for your web domain
+- Build web with `VITE_API_URL` empty when using nginx proxy (default in compose)
 
 ## License
 

@@ -1,14 +1,17 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/velonetics/velonetics-configurator/internal/doctor"
 	"github.com/velonetics/velonetics-configurator/internal/generator"
 	"github.com/velonetics/velonetics-configurator/internal/presets"
 	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/velonetics/velonetics-configurator/internal/velocheck"
 	"github.com/velonetics/velonetics-configurator/internal/wizard"
 )
 
@@ -27,22 +30,28 @@ func Execute() {
 	}
 }
 
-func init() {
-	rootCmd.AddCommand(initCmd)
-	rootCmd.AddCommand(generateCmd)
-	rootCmd.AddCommand(validateCmd)
-	rootCmd.AddCommand(presetsCmd)
-}
-
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Interactive wizard to create a gateway profile",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		output, _ := cmd.Flags().GetString("output")
-		w := wizard.New()
-		p, err := w.Run()
-		if err != nil {
-			return err
+		fromPreset, _ := cmd.Flags().GetString("from-preset")
+
+		var p *profile.Profile
+		var err error
+
+		if fromPreset != "" {
+			p, err = presets.Load(fromPreset)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Loaded preset %q — customize in your editor if needed\n", fromPreset)
+		} else {
+			w := wizard.New()
+			p, err = w.Run()
+			if err != nil {
+				return err
+			}
 		}
 
 		if err := os.MkdirAll(filepath.Dir(output), 0o755); err != nil && filepath.Dir(output) != "." {
@@ -52,6 +61,14 @@ var initCmd = &cobra.Command{
 			return err
 		}
 		fmt.Printf("Profile written to %s\n", output)
+
+		edit, _ := cmd.Flags().GetBool("edit")
+		if edit {
+			if err := openInEditor(output); err != nil {
+				return err
+			}
+		}
+
 		fmt.Println("Run: velonetics-config generate -f", output, "-o ./output")
 		return nil
 	},
@@ -64,6 +81,8 @@ var generateCmd = &cobra.Command{
 		profilePath, _ := cmd.Flags().GetString("file")
 		outputDir, _ := cmd.Flags().GetString("output")
 		withCompose, _ := cmd.Flags().GetBool("compose")
+		toStdout, _ := cmd.Flags().GetBool("stdout")
+		runCheck, _ := cmd.Flags().GetBool("check")
 
 		p, err := profile.Load(profilePath)
 		if err != nil {
@@ -73,6 +92,21 @@ var generateCmd = &cobra.Command{
 		out, err := generator.Generate(p)
 		if err != nil {
 			return err
+		}
+
+		for _, a := range doctor.Check(p) {
+			if a.Level == "warn" {
+				fmt.Fprintf(os.Stderr, "  advisory [%s]: %s\n", a.Field, a.Message)
+			}
+		}
+
+		if toStdout {
+			data, err := json.MarshalIndent(out.Config, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(data))
+			return nil
 		}
 
 		if err := generator.Write(outputDir, out, p, withCompose); err != nil {
@@ -89,6 +123,24 @@ var generateCmd = &cobra.Command{
 		for _, w := range out.Warnings {
 			fmt.Printf("  warning: %s\n", w)
 		}
+
+		if runCheck {
+			res, err := velocheck.Run(filepath.Join(outputDir, "velonetics.json"))
+			if err != nil {
+				return err
+			}
+			if res.Error != "" && !res.OK {
+				fmt.Fprintf(os.Stderr, "velonetics check: %s\n", res.Error)
+				if res.Output != "" {
+					fmt.Fprint(os.Stderr, res.Output)
+				}
+			} else if res.OK {
+				fmt.Println("velonetics check: OK")
+			} else if res.Output != "" {
+				fmt.Print(res.Output)
+			}
+		}
+
 		fmt.Println()
 		fmt.Println("Next steps:")
 		fmt.Printf("  velonetics check -c %s/velonetics.json\n", outputDir)
@@ -102,11 +154,43 @@ var validateCmd = &cobra.Command{
 	Short: "Validate a profile without generating output",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		profilePath, _ := cmd.Flags().GetString("file")
-		p, err := profile.Load(profilePath)
+		asJSON, _ := cmd.Flags().GetBool("json")
+
+		data, err := os.ReadFile(profilePath)
 		if err != nil {
 			return err
 		}
+		var p profile.Profile
+		if err := profile.UnmarshalYAML(data, &p); err != nil {
+			return err
+		}
+		profile.ApplyDefaults(&p)
+		errs := profile.ValidateStructured(&p)
+		advisories := doctor.Check(&p)
+
+		if asJSON {
+			enc := json.NewEncoder(os.Stdout)
+			enc.SetIndent("", "  ")
+			return enc.Encode(map[string]any{
+				"valid":       !errs.HasErrors(),
+				"errors":      errs,
+				"advisories":  advisories,
+				"route_count": len(p.Routes),
+				"name":        p.Metadata.Name,
+			})
+		}
+
+		if errs.HasErrors() {
+			for _, e := range errs {
+				fmt.Printf("  error [%s]: %s\n", e.Field, e.Message)
+			}
+			return fmt.Errorf("profile has %d validation error(s)", len(errs))
+		}
+
 		fmt.Printf("Profile %q is valid (%d routes)\n", p.Metadata.Name, len(p.Routes))
+		for _, a := range advisories {
+			fmt.Printf("  advisory [%s]: %s\n", a.Field, a.Message)
+		}
 		return nil
 	},
 }
@@ -141,6 +225,7 @@ var presetsApplyCmd = &cobra.Command{
 		output, _ := cmd.Flags().GetString("output")
 		genDir, _ := cmd.Flags().GetString("generate-dir")
 		withCompose, _ := cmd.Flags().GetBool("compose")
+		edit, _ := cmd.Flags().GetBool("edit")
 
 		p, err := presets.Load(name)
 		if err != nil {
@@ -152,6 +237,11 @@ var presetsApplyCmd = &cobra.Command{
 				return err
 			}
 			fmt.Printf("Preset %q saved to %s\n", name, output)
+			if edit {
+				if err := openInEditor(output); err != nil {
+					return err
+				}
+			}
 		}
 
 		if genDir != "" {
@@ -176,17 +266,28 @@ var presetsApplyCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(generateCmd)
+	rootCmd.AddCommand(validateCmd)
+	rootCmd.AddCommand(presetsCmd)
+
 	initCmd.Flags().StringP("output", "o", "profile.yaml", "Output profile file path")
+	initCmd.Flags().String("from-preset", "", "Start from a built-in preset instead of the wizard")
+	initCmd.Flags().Bool("edit", false, "Open profile in $EDITOR after creation")
 
 	generateCmd.Flags().StringP("file", "f", "profile.yaml", "Input profile YAML file")
 	generateCmd.Flags().StringP("output", "o", "./output", "Output directory for velonetics.json")
 	generateCmd.Flags().Bool("compose", false, "Generate docker-compose.yml for local development")
+	generateCmd.Flags().Bool("stdout", false, "Print velonetics.json to stdout instead of writing files")
+	generateCmd.Flags().Bool("check", false, "Run velonetics check after generating (requires velonetics on PATH)")
 
 	validateCmd.Flags().StringP("file", "f", "profile.yaml", "Input profile YAML file")
+	validateCmd.Flags().Bool("json", false, "Output validation result as JSON")
 
 	presetsApplyCmd.Flags().StringP("output", "o", "", "Save preset as profile YAML")
 	presetsApplyCmd.Flags().StringP("generate-dir", "g", "", "Generate velonetics.json to directory")
 	presetsApplyCmd.Flags().Bool("compose", false, "Generate docker-compose.yml for local development")
+	presetsApplyCmd.Flags().Bool("edit", false, "Open saved profile in $EDITOR")
 
 	presetsCmd.AddCommand(presetsListCmd)
 	presetsCmd.AddCommand(presetsApplyCmd)

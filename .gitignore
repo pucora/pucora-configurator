@@ -1,5 +1,8 @@
 bin/
+data/
 output/
 output-*/
+web/node_modules/
+web/dist/
 *.exe
 .DS_Store

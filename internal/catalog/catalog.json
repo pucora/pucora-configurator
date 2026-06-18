@@ -1,0 +1,346 @@
+{
+  "version": "1",
+  "backendTypes": [
+    {
+      "id": "http",
+      "label": "HTTP / REST",
+      "description": "Proxy to a standard HTTP backend",
+      "icon": "globe",
+      "fields": ["host", "path", "method", "encoding"]
+    },
+    {
+      "id": "grpc",
+      "label": "gRPC",
+      "description": "Call an upstream gRPC service",
+      "icon": "layers",
+      "fields": ["host", "path", "input_mapping"]
+    },
+    {
+      "id": "websocket",
+      "label": "WebSocket",
+      "description": "Proxy WebSocket connections (ws:// or wss://)",
+      "icon": "radio",
+      "fields": ["host", "path"]
+    },
+    {
+      "id": "kafka",
+      "label": "Kafka",
+      "description": "Publish or subscribe via Apache Kafka",
+      "icon": "message-square",
+      "fields": ["host", "topic", "subscription", "consumer_group"]
+    },
+    {
+      "id": "nats",
+      "label": "NATS",
+      "description": "Publish or subscribe via NATS",
+      "icon": "message-square",
+      "fields": ["host", "topic", "subscription"]
+    },
+    {
+      "id": "rabbit",
+      "label": "RabbitMQ",
+      "description": "Publish or subscribe via RabbitMQ",
+      "icon": "message-square",
+      "fields": ["host", "topic", "subscription"]
+    },
+    {
+      "id": "graphql",
+      "label": "GraphQL",
+      "description": "GraphQL query or mutation adapter",
+      "icon": "git-branch",
+      "fields": ["host", "path", "graphql_type", "query_path", "operation_name", "graphql_variables"]
+    },
+    {
+      "id": "soap",
+      "label": "SOAP / XML",
+      "description": "SOAP/XML backend with template",
+      "icon": "file-code",
+      "fields": ["host", "path", "soap_template", "target", "mapping"]
+    },
+    {
+      "id": "lambda",
+      "label": "AWS Lambda",
+      "description": "Invoke AWS Lambda functions",
+      "icon": "zap",
+      "fields": ["host", "path"]
+    },
+    {
+      "id": "gcp",
+      "label": "Google Pub/Sub",
+      "description": "Publish or subscribe via GCP Pub/Sub",
+      "icon": "cloud",
+      "fields": ["topic", "subscription"]
+    },
+    {
+      "id": "azure",
+      "label": "Azure Service Bus",
+      "description": "Publish or subscribe via Azure Service Bus",
+      "icon": "cloud",
+      "fields": ["host", "topic", "subscription"]
+    },
+    {
+      "id": "aws_sns",
+      "label": "AWS SNS",
+      "description": "Publish to AWS SNS topics",
+      "icon": "cloud",
+      "fields": ["host", "topic"]
+    },
+    {
+      "id": "aws_sqs",
+      "label": "AWS SQS",
+      "description": "Subscribe from AWS SQS queues",
+      "icon": "cloud",
+      "fields": ["host", "subscription"]
+    }
+  ],
+  "routeTemplates": [
+    {
+      "id": "rest",
+      "label": "REST Proxy",
+      "method": "GET",
+      "backendType": "http",
+      "defaults": {
+        "path": "/api/{path}",
+        "headers": { "forward": ["Authorization", "Content-Type"] },
+        "backend": { "host": "http://localhost:8000", "path": "/{path}" }
+      }
+    },
+    {
+      "id": "rest-jwt",
+      "label": "JWT Protected REST",
+      "method": "GET",
+      "backendType": "http",
+      "defaults": {
+        "path": "/protected/{path}",
+        "headers": { "forward": ["Authorization", "Content-Type"] },
+        "auth": { "jwt": { "alg": "RS256", "jwk_url": "" } },
+        "backend": { "host": "http://localhost:8000", "path": "/{path}" }
+      }
+    },
+    {
+      "id": "kafka-publish",
+      "label": "Kafka Publisher",
+      "method": "POST",
+      "backendType": "kafka",
+      "defaults": {
+        "path": "/events",
+        "backend": { "host": "localhost:9092", "path": "/ignored", "topic": "events" }
+      }
+    },
+    {
+      "id": "kafka-subscribe",
+      "label": "Kafka Subscriber",
+      "method": "GET",
+      "backendType": "kafka",
+      "defaults": {
+        "path": "/events",
+        "backend": { "host": "localhost:9092", "path": "/ignored", "subscription": "events", "consumer_group": "my-group" }
+      }
+    },
+    {
+      "id": "websocket",
+      "label": "WebSocket",
+      "method": "GET",
+      "backendType": "websocket",
+      "defaults": {
+        "path": "/ws/echo",
+        "websocket": { "direct_communication": true, "max_message_size": 4096 },
+        "backend": { "host": "ws://localhost:8081", "path": "/echo" }
+      }
+    },
+    {
+      "id": "grpc",
+      "label": "gRPC Client",
+      "method": "GET",
+      "backendType": "grpc",
+      "defaults": {
+        "path": "/grpc",
+        "query_strings": { "forward": ["*"] },
+        "backend": { "host": "localhost:4242", "path": "/package.Service/Method" }
+      }
+    },
+    {
+      "id": "graphql",
+      "label": "GraphQL Query",
+      "method": "GET",
+      "backendType": "graphql",
+      "defaults": {
+        "path": "/hero/{episode}",
+        "backend": { "host": "http://localhost:4000", "path": "/graphql", "graphql_type": "query", "query_path": "/etc/velonetics/graphql/queries/hero.graphql" }
+      }
+    },
+    {
+      "id": "soap",
+      "label": "SOAP",
+      "method": "GET",
+      "backendType": "soap",
+      "defaults": {
+        "path": "/country/{country}",
+        "backend": { "host": "http://localhost:8081", "path": "/CountryInfoService.wso", "soap_template": "/etc/velonetics/soap/flag_request.xml" }
+      }
+    },
+    {
+      "id": "sse",
+      "label": "SSE Streaming",
+      "method": "GET",
+      "backendType": "http",
+      "defaults": {
+        "path": "/events",
+        "timeout": "30s",
+        "output_encoding": "no-op",
+        "backend": { "host": "http://localhost:8000", "path": "/events", "encoding": "no-op" }
+      }
+    },
+    {
+      "id": "graphql-proxy",
+      "label": "GraphQL Proxy",
+      "method": "POST",
+      "backendType": "http",
+      "defaults": {
+        "path": "/graphql",
+        "headers": { "forward": ["Content-Type", "Authorization"] },
+        "query_strings": { "forward": ["query", "operationName", "variables"] },
+        "backend": { "host": "http://localhost:4000", "path": "/graphql", "method": "POST" }
+      }
+    },
+    {
+      "id": "ws-jwt",
+      "label": "WebSocket + JWT",
+      "method": "GET",
+      "backendType": "websocket",
+      "defaults": {
+        "path": "/ws/secure",
+        "auth": { "jwt": { "alg": "HS256", "jwk_url": "" } },
+        "websocket": { "direct_communication": true, "max_message_size": 4096, "input_headers": ["Authorization"] },
+        "backend": { "host": "ws://localhost:8081", "path": "/echo" }
+      }
+    }
+  ],
+  "enums": {
+    "httpMethods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
+    "jwtAlgorithms": ["RS256", "RS384", "RS512", "HS256", "HS384", "HS512", "ES256", "ES384", "ES512"],
+    "logLevels": ["DEBUG", "INFO", "WARNING", "ERROR"],
+    "graphqlTypes": ["query", "mutation"],
+    "outputEncodings": ["json", "no-op", "xml", "string"]
+  },
+  "commonHeaders": [
+    "Authorization",
+    "Content-Type",
+    "Accept",
+    "Origin",
+    "X-Request-ID",
+    "X-Event-Key"
+  ],
+  "corsPresets": [
+    {
+      "id": "spa-dev",
+      "label": "Local SPA dev",
+      "allow_origins": ["http://localhost:3000", "http://localhost:5173"],
+      "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"]
+    },
+    {
+      "id": "public",
+      "label": "Public API",
+      "allow_origins": ["*"],
+      "allow_methods": ["GET", "POST", "OPTIONS"],
+      "allow_headers": ["Origin", "Authorization", "Content-Type"]
+    },
+    {
+      "id": "locked",
+      "label": "Locked down",
+      "allow_origins": [],
+      "allow_methods": ["GET"],
+      "allow_headers": ["Authorization"]
+    }
+  ],
+  "fields": {
+    "gateway.port": {
+      "label": "Gateway port",
+      "help": "Port the Velonetics gateway listens on",
+      "type": "number",
+      "default": 8080
+    },
+    "gateway.timeout": {
+      "label": "Request timeout",
+      "help": "Default timeout for all endpoints (e.g. 3s, 30s)",
+      "type": "string",
+      "default": "3s"
+    },
+    "gateway.write_timeout": {
+      "label": "Write timeout",
+      "help": "Set to 0s for SSE and long-lived streaming connections",
+      "type": "string"
+    },
+    "grpc.catalog": {
+      "label": "gRPC catalog",
+      "help": "Paths to compiled .pb protobuf descriptor files",
+      "type": "tags"
+    },
+    "routes.path": {
+      "label": "Endpoint path",
+      "help": "URL path exposed by the gateway. Use {placeholders} for variables, e.g. /users/{id}",
+      "type": "string",
+      "placeholder": "/api/{path}"
+    },
+    "routes.method": {
+      "label": "HTTP method",
+      "help": "HTTP method for this endpoint",
+      "type": "enum",
+      "enum": "httpMethods"
+    },
+    "routes.headers.forward": {
+      "label": "Headers to forward",
+      "help": "Client headers allowed to reach the backend. By default Velonetics blocks all headers.",
+      "type": "tags"
+    },
+    "routes.query_strings.forward": {
+      "label": "Query parameters to forward",
+      "help": "Query string parameters allowed to reach the backend",
+      "type": "tags"
+    },
+    "routes.backend.host": {
+      "label": "Backend host",
+      "help": "Upstream host URL or connection string",
+      "type": "string"
+    },
+    "routes.backend.path": {
+      "label": "Backend path",
+      "help": "URL pattern on the backend service",
+      "type": "string"
+    },
+    "routes.backend.type": {
+      "label": "Backend type",
+      "help": "Type of upstream connection",
+      "type": "enum",
+      "enum": "backendTypes"
+    },
+    "routes.backend.topic": {
+      "label": "Topic name",
+      "help": "Kafka/NATS/Rabbit topic or subject to publish to",
+      "type": "string",
+      "showWhen": { "backend.type": ["kafka", "nats", "rabbit"] }
+    },
+    "routes.backend.subscription": {
+      "label": "Subscription",
+      "help": "Topic or subject to subscribe from",
+      "type": "string",
+      "showWhen": { "backend.type": ["kafka", "nats", "rabbit"] }
+    },
+    "routes.auth.jwt.jwk_url": {
+      "label": "JWK URL",
+      "help": "URL to fetch JSON Web Key Set for token validation",
+      "type": "string"
+    },
+    "cors.allow_origins": {
+      "label": "Allowed origins",
+      "help": "Origins allowed for cross-origin browser requests",
+      "type": "tags"
+    },
+    "cors.allow_headers": {
+      "label": "Allowed headers (CORS)",
+      "help": "Headers browsers may send in cross-origin requests",
+      "type": "tags"
+    }
+  }
+}
