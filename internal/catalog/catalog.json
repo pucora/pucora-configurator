@@ -166,7 +166,7 @@
       "backendType": "graphql",
       "defaults": {
         "path": "/hero/{episode}",
-        "backend": { "host": "http://localhost:4000", "path": "/graphql", "graphql_type": "query", "query_path": "/etc/velonetics/graphql/queries/hero.graphql" }
+        "backend": { "host": "http://localhost:4000", "path": "/graphql", "graphql_type": "query", "query_path": "/etc/pucora/graphql/queries/hero.graphql" }
       }
     },
     {
@@ -176,7 +176,7 @@
       "backendType": "soap",
       "defaults": {
         "path": "/country/{country}",
-        "backend": { "host": "http://localhost:8081", "path": "/CountryInfoService.wso", "soap_template": "/etc/velonetics/soap/flag_request.xml" }
+        "backend": { "host": "http://localhost:8081", "path": "/CountryInfoService.wso", "soap_template": "/etc/pucora/soap/flag_request.xml" }
       }
     },
     {
@@ -257,7 +257,7 @@
   "fields": {
     "gateway.port": {
       "label": "Gateway port",
-      "help": "Port the Velonetics gateway listens on",
+      "help": "Port the Pucora gateway listens on",
       "type": "number",
       "default": 8080
     },
@@ -291,7 +291,7 @@
     },
     "routes.headers.forward": {
       "label": "Headers to forward",
-      "help": "Client headers allowed to reach the backend. By default Velonetics blocks all headers.",
+      "help": "Client headers allowed to reach the backend. By default Pucora blocks all headers.",
       "type": "tags"
     },
     "routes.query_strings.forward": {

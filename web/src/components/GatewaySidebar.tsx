@@ -69,7 +69,7 @@ export function GatewaySidebar({ catalog }: GatewaySidebarProps) {
             p.grpc.catalog = v
             return p
           })}
-          suggestions={['./grpc/catalog.pb', '/etc/velonetics/grpc/catalog.pb']}
+          suggestions={['./grpc/catalog.pb', '/etc/pucora/grpc/catalog.pb']}
           placeholder="Path to .pb file"
         />
       </div>
@@ -188,7 +188,7 @@ export function GatewaySidebar({ catalog }: GatewaySidebarProps) {
                   p.compose.image = e.target.value || undefined
                   return p
                 })}
-                placeholder="niteesh20/velonetics:2.0.0"
+                placeholder="niteesh20/pucora:2.0.0"
               />
             </div>
             <label className="flex items-center gap-2 normal-case text-sm text-slate-300">

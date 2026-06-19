@@ -244,7 +244,7 @@ export function RouteInspector({ route, index, catalog }: RouteInspectorProps) {
             <input
               value={route.backend.query_path || ''}
               onChange={(e) => update((r) => { r.backend.query_path = e.target.value })}
-              placeholder="/etc/velonetics/graphql/queries/hero.graphql"
+              placeholder="/etc/pucora/graphql/queries/hero.graphql"
             />
           </div>
           <div className="space-y-1.5">
@@ -271,7 +271,7 @@ export function RouteInspector({ route, index, catalog }: RouteInspectorProps) {
             <input
               value={route.backend.soap_template || ''}
               onChange={(e) => update((r) => { r.backend.soap_template = e.target.value })}
-              placeholder="/etc/velonetics/soap/request.xml"
+              placeholder="/etc/pucora/soap/request.xml"
             />
           </div>
           <div className="space-y-1.5">

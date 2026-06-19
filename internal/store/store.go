@@ -18,7 +18,7 @@ type Bundle struct {
 	Name           string            `json:"name"`
 	UpdatedAt      time.Time         `json:"updated_at"`
 	ProfileYAML    string            `json:"profile_yaml,omitempty"`
-	VeloneticsJSON map[string]any    `json:"velonetics_json"`
+	PucoraJSON map[string]any    `json:"velonetics_json"`
 	Env            map[string]string `json:"env,omitempty"`
 	ComposeYAML    string            `json:"compose_yaml,omitempty"`
 }
@@ -59,7 +59,7 @@ func (s *Store) Save(bundle Bundle) error {
 		return err
 	}
 
-	if err := writeJSON(filepath.Join(dir, "velonetics.json"), bundle.VeloneticsJSON); err != nil {
+	if err := writeJSON(filepath.Join(dir, "pucora.json"), bundle.PucoraJSON); err != nil {
 		return err
 	}
 	if bundle.ProfileYAML != "" {
@@ -101,13 +101,13 @@ func (s *Store) Load(name string) (*Bundle, error) {
 	var bundle Bundle
 	bundle.Name = name
 
-	veloPath := filepath.Join(dir, "velonetics.json")
+	veloPath := filepath.Join(dir, "pucora.json")
 	data, err := os.ReadFile(veloPath)
 	if err != nil {
-		return nil, fmt.Errorf("read velonetics.json: %w", err)
+		return nil, fmt.Errorf("read pucora.json: %w", err)
 	}
-	if err := json.Unmarshal(data, &bundle.VeloneticsJSON); err != nil {
-		return nil, fmt.Errorf("parse velonetics.json: %w", err)
+	if err := json.Unmarshal(data, &bundle.PucoraJSON); err != nil {
+		return nil, fmt.Errorf("parse pucora.json: %w", err)
 	}
 
 	if yamlData, err := os.ReadFile(filepath.Join(dir, "profile.yaml")); err == nil {
@@ -131,13 +131,13 @@ func (s *Store) Load(name string) (*Bundle, error) {
 	return &bundle, nil
 }
 
-func (s *Store) LoadVeloneticsJSON(name string) ([]byte, error) {
+func (s *Store) LoadPucoraJSON(name string) ([]byte, error) {
 	if name == "" {
 		name = DefaultName
 	}
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	path := filepath.Join(s.configDir(name), "velonetics.json")
+	path := filepath.Join(s.configDir(name), "pucora.json")
 	return os.ReadFile(path)
 }
 
@@ -152,7 +152,7 @@ func (s *Store) List() ([]string, error) {
 	var names []string
 	for _, e := range entries {
 		if e.IsDir() {
-			if _, err := os.Stat(filepath.Join(s.dir, e.Name(), "velonetics.json")); err == nil {
+			if _, err := os.Stat(filepath.Join(s.dir, e.Name(), "pucora.json")); err == nil {
 				names = append(names, e.Name())
 			}
 		}
@@ -160,11 +160,11 @@ func (s *Store) List() ([]string, error) {
 	return names, nil
 }
 
-func (s *Store) SaveFromProfileYAML(name, profileYAML string, velonetics map[string]any, env map[string]string, composeYAML string) error {
+func (s *Store) SaveFromProfileYAML(name, profileYAML string, pucora map[string]any, env map[string]string, composeYAML string) error {
 	return s.Save(Bundle{
 		Name:           name,
 		ProfileYAML:    profileYAML,
-		VeloneticsJSON: velonetics,
+		PucoraJSON: pucora,
 		Env:            env,
 		ComposeYAML:    composeYAML,
 	})

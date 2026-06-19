@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/compose"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/compose"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 )
 
 type Output struct {
@@ -64,7 +64,7 @@ func Write(outputDir string, out *Output, p *profile.Profile, withCompose bool) 
 		return fmt.Errorf("create output dir: %w", err)
 	}
 
-	configPath := filepath.Join(outputDir, "velonetics.json")
+	configPath := filepath.Join(outputDir, "pucora.json")
 	data, err := json.MarshalIndent(out.Config, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal config: %w", err)
@@ -131,7 +131,7 @@ func buildServiceExtraConfig(p *profile.Profile, out *Output) map[string]any {
 		if p.Telemetry.Logging != nil {
 			ec["telemetry/logging"] = map[string]any{
 				"level":  p.Telemetry.Logging.Level,
-				"prefix": "[VELONETICS]",
+				"prefix": "[PUCORA]",
 				"stdout": p.Telemetry.Logging.Stdout,
 			}
 		}

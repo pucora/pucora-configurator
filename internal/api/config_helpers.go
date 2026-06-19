@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/compose"
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
-	"github.com/velonetics/velonetics-configurator/internal/store"
+	"github.com/pucora/velonetics-configurator/internal/compose"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/store"
 	"gopkg.in/yaml.v3"
 )
 
@@ -17,11 +17,11 @@ func (s *Server) buildBundleFromRequest(name string, req configSaveRequest) (*st
 		name = store.DefaultName
 	}
 
-	// Raw velonetics.json upload (skip profile validation)
-	if req.VeloneticsJSON != nil && req.Profile == nil && req.ProfileYAML == "" {
+	// Raw pucora.json upload (skip profile validation)
+	if req.PucoraJSON != nil && req.Profile == nil && req.ProfileYAML == "" {
 		return &store.Bundle{
 			Name:           name,
-			VeloneticsJSON: req.VeloneticsJSON,
+			PucoraJSON: req.PucoraJSON,
 		}, http.StatusOK, nil
 	}
 
@@ -58,7 +58,7 @@ func (s *Server) buildBundleFromRequest(name string, req configSaveRequest) (*st
 	bundle := &store.Bundle{
 		Name:           name,
 		ProfileYAML:    string(yamlData),
-		VeloneticsJSON: out.Config,
+		PucoraJSON: out.Config,
 		Env:            out.Env,
 	}
 
@@ -94,7 +94,7 @@ func (s *Server) configURLs(name string) map[string]string {
 	}
 	return map[string]string{
 		"bundle":          prefix,
-		"velonetics_json": prefix + "/velonetics.json",
+		"velonetics_json": prefix + "/pucora.json",
 		"profile_yaml":    prefix + "?format=yaml",
 	}
 }

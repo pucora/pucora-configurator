@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 )
 
 type Wizard struct {
@@ -19,7 +19,7 @@ func New() *Wizard {
 }
 
 func (w *Wizard) Run() (*profile.Profile, error) {
-	fmt.Println("Velonetics Configurator — Interactive Setup")
+	fmt.Println("Pucora Configurator — Interactive Setup")
 	fmt.Println("===========================================")
 	fmt.Println()
 
@@ -221,7 +221,7 @@ func (w *Wizard) configureSSE(p *profile.Profile) {
 func (w *Wizard) configureGraphQL(p *profile.Profile) {
 	backendHost := w.prompt("GraphQL backend URL", "http://localhost:4000")
 	path := w.prompt("Gateway path", "/hero/{episode}")
-	queryPath := w.prompt("Query file path", "/etc/velonetics/graphql/queries/hero.graphql")
+	queryPath := w.prompt("Query file path", "/etc/pucora/graphql/queries/hero.graphql")
 
 	p.Routes = []profile.Route{{
 		Path: path, Method: "GET",
@@ -236,7 +236,7 @@ func (w *Wizard) configureGraphQL(p *profile.Profile) {
 func (w *Wizard) configureSOAP(p *profile.Profile) {
 	backendHost := w.prompt("SOAP backend URL", "http://localhost:8081")
 	path := w.prompt("Gateway path", "/country/{country}")
-	template := w.prompt("SOAP template path", "/etc/velonetics/soap/request.xml")
+	template := w.prompt("SOAP template path", "/etc/pucora/soap/request.xml")
 
 	p.Routes = []profile.Route{{
 		Path: path, Method: "GET",

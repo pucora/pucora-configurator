@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 )
 
 // Summary describes differences between two profiles or generated configs.
@@ -16,7 +16,7 @@ type Summary struct {
 	GeneratedDiff []string `json:"generated_diff,omitempty"`
 }
 
-// Profiles compares two profiles by JSON serialization and generated velonetics.json.
+// Profiles compares two profiles by JSON serialization and generated pucora.json.
 func Profiles(a, b *profile.Profile) (*Summary, error) {
 	s := &Summary{}
 

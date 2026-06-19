@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/api"
-	"github.com/velonetics/velonetics-configurator/internal/store"
+	"github.com/pucora/velonetics-configurator/internal/api"
+	"github.com/pucora/velonetics-configurator/internal/store"
 )
 
 func main() {

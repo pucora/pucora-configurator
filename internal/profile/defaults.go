@@ -2,7 +2,7 @@ package profile
 
 func ApplyDefaults(p *Profile) {
 	if p.APIVersion == "" {
-		p.APIVersion = "configurator.velonetics.io/v1"
+		p.APIVersion = "configurator.pucora.io/v1"
 	}
 	if p.Kind == "" {
 		p.Kind = "GatewayProfile"

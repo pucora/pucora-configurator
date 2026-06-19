@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/catalog"
-	"github.com/velonetics/velonetics-configurator/internal/compose"
-	"github.com/velonetics/velonetics-configurator/internal/doctor"
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/importer"
-	"github.com/velonetics/velonetics-configurator/internal/presets"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
-	"github.com/velonetics/velonetics-configurator/internal/store"
+	"github.com/pucora/velonetics-configurator/internal/catalog"
+	"github.com/pucora/velonetics-configurator/internal/compose"
+	"github.com/pucora/velonetics-configurator/internal/doctor"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/importer"
+	"github.com/pucora/velonetics-configurator/internal/presets"
+	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/store"
 	"gopkg.in/yaml.v3"
 )
 
@@ -231,7 +231,7 @@ func (s *Server) handleImportJSON(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	res, err := importer.FromVeloneticsJSON(body.Config)
+	res, err := importer.FromPucoraJSON(body.Config)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return

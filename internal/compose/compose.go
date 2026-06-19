@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 )
 
-const defaultImage = "niteesh20/velonetics:2.0.0"
+const defaultImage = "niteesh20/pucora:2.0.0"
 
 type Requirements struct {
 	Kafka        bool
@@ -130,7 +130,7 @@ func veloneticsService(image string, p *profile.Profile, env map[string]string, 
 	}
 
 	var sb strings.Builder
-	sb.WriteString("  velonetics:\n")
+	sb.WriteString("  pucora:\n")
 	sb.WriteString(fmt.Sprintf("    image: %s\n", image))
 	sb.WriteString("    ports:\n")
 	sb.WriteString(fmt.Sprintf("      - \"%d:%d\"\n", port, port))
@@ -151,7 +151,7 @@ func veloneticsService(image string, p *profile.Profile, env map[string]string, 
 		sb.WriteString("      RABBIT_SERVER_URL: guest:guest@rabbitmq:5672\n")
 	}
 	sb.WriteString("    volumes:\n")
-	sb.WriteString("      - ./velonetics.json:/etc/velonetics/velonetics.json:ro\n")
+	sb.WriteString("      - ./pucora.json:/etc/pucora/pucora.json:ro\n")
 	if req.GRPCCatalog && p.GRPC != nil {
 		for _, cat := range p.GRPC.Catalog {
 			if strings.HasPrefix(cat, "./") {
@@ -160,12 +160,12 @@ func veloneticsService(image string, p *profile.Profile, env map[string]string, 
 		}
 	}
 	if req.GraphQLFiles {
-		sb.WriteString("      - ./graphql:/etc/velonetics/graphql:ro\n")
+		sb.WriteString("      - ./graphql:/etc/pucora/graphql:ro\n")
 	}
 	if req.SOAPFiles {
-		sb.WriteString("      - ./soap:/etc/velonetics/soap:ro\n")
+		sb.WriteString("      - ./soap:/etc/pucora/soap:ro\n")
 	}
-	sb.WriteString(fmt.Sprintf("    command: [\"run\", \"-c\", \"/etc/velonetics/velonetics.json\"]\n"))
+	sb.WriteString(fmt.Sprintf("    command: [\"run\", \"-c\", \"/etc/pucora/pucora.json\"]\n"))
 
 	var deps []string
 	if req.Kafka {
@@ -264,7 +264,7 @@ func isLocalHost(host string) bool {
 
 func dockerPath(p string) string {
 	if strings.HasPrefix(p, "./") {
-		return "/etc/velonetics/" + strings.TrimPrefix(p, "./")
+		return "/etc/pucora/" + strings.TrimPrefix(p, "./")
 	}
 	return p
 }

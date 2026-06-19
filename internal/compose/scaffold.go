@@ -7,7 +7,7 @@ import (
 
 const servicesReadme = `# Local development services
 
-Copy mock service folders from Velonetics CE examples into this directory:
+Copy mock service folders from Pucora CE examples into this directory:
 
 | Service | Copy from |
 |---------|-----------|

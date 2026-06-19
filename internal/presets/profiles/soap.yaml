@@ -1,4 +1,4 @@
-apiVersion: configurator.velonetics.io/v1
+apiVersion: configurator.pucora.io/v1
 kind: GatewayProfile
 metadata:
   name: SOAP Gateway
@@ -26,7 +26,7 @@ routes:
       host: http://mock-backend:8081
       path: /CountryInfoService.wso
       method: POST
-      soap_template: /etc/velonetics/soap/flag_request.xml
+      soap_template: /etc/pucora/soap/flag_request.xml
       target: Envelope.Body.CountryFlagResponse
       mapping:
         CountryFlagResult: flag_url

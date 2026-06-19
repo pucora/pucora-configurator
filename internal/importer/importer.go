@@ -4,24 +4,24 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 )
 
-// Result holds a best-effort profile conversion from velonetics.json.
+// Result holds a best-effort profile conversion from pucora.json.
 type Result struct {
 	Profile  profile.Profile
 	Warnings []string
 }
 
-// FromVeloneticsJSON maps a velonetics.json document into a simplified GatewayProfile.
-func FromVeloneticsJSON(cfg map[string]any) (*Result, error) {
+// FromPucoraJSON maps a pucora.json document into a simplified GatewayProfile.
+func FromPucoraJSON(cfg map[string]any) (*Result, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("empty config")
 	}
 
 	res := &Result{
 		Profile: profile.Profile{
-			APIVersion: "configurator.velonetics.io/v1",
+			APIVersion: "configurator.pucora.io/v1",
 			Kind:       "GatewayProfile",
 		},
 	}

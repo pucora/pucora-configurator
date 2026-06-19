@@ -19,7 +19,7 @@ export function PreviewPanel() {
   const downloadZip = async () => {
     if (!preview) return
     const zip = new JSZip()
-    zip.file('velonetics.json', preview.veloneticsJson)
+    zip.file('pucora.json', preview.veloneticsJson)
     zip.file('profile.yaml', preview.profileYaml)
     if (Object.keys(preview.env).length) {
       zip.file('.env', Object.entries(preview.env).map(([k, v]) => `${k}=${v}`).join('\n'))
@@ -47,7 +47,7 @@ export function PreviewPanel() {
               onClick={() => setTab(t)}
               className={`px-3 py-1 text-xs rounded ${tab === t ? 'bg-cyan-900/50 text-cyan-200' : 'text-slate-500 hover:text-slate-300'}`}
             >
-              {t === 'json' ? 'velonetics.json' : t === 'yaml' ? 'profile.yaml' : 'docker-compose'}
+              {t === 'json' ? 'pucora.json' : t === 'yaml' ? 'profile.yaml' : 'docker-compose'}
             </button>
           ))}
         </div>
@@ -64,7 +64,7 @@ export function PreviewPanel() {
             <>
               <button
                 type="button"
-                onClick={() => download('velonetics.json', preview.veloneticsJson)}
+                onClick={() => download('pucora.json', preview.veloneticsJson)}
                 className="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
               >
                 Download JSON

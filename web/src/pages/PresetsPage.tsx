@@ -35,7 +35,7 @@ export function PresetsPage({ onStart }: PresetsPageProps) {
   return (
     <div className="min-h-screen bg-slate-950">
       <header className="border-b border-slate-800 px-8 py-6">
-        <h1 className="text-2xl font-bold text-white">Velonetics Configurator</h1>
+        <h1 className="text-2xl font-bold text-white">Pucora Configurator</h1>
         <p className="text-slate-400 mt-1">Build gateway configs visually — no YAML or JSON expertise required</p>
       </header>
 

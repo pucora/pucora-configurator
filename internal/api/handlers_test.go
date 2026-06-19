@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/velonetics/velonetics-configurator/internal/api"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
-	"github.com/velonetics/velonetics-configurator/internal/store"
+	"github.com/pucora/velonetics-configurator/internal/api"
+	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/store"
 )
 
 func testServer(t *testing.T) *api.Server {
@@ -87,11 +87,11 @@ func TestConfigPostAndGet(t *testing.T) {
 		t.Fatalf("POST expected 200, got %d: %s", postW.Code, postW.Body.String())
 	}
 
-	getReq := httptest.NewRequest(http.MethodGet, "/api/config/prod/velonetics.json", nil)
+	getReq := httptest.NewRequest(http.MethodGet, "/api/config/prod/pucora.json", nil)
 	getW := httptest.NewRecorder()
 	srv.Handler().ServeHTTP(getW, getReq)
 	if getW.Code != http.StatusOK {
-		t.Fatalf("GET velonetics.json expected 200, got %d", getW.Code)
+		t.Fatalf("GET pucora.json expected 200, got %d", getW.Code)
 	}
 	if !strings.Contains(getW.Body.String(), `"port": 8080`) {
 		t.Fatalf("expected port in json, got %s", getW.Body.String())

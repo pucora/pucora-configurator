@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/velonetics/velonetics-configurator/internal/compose"
-	"github.com/velonetics/velonetics-configurator/internal/presets"
+	"github.com/pucora/velonetics-configurator/internal/compose"
+	"github.com/pucora/velonetics-configurator/internal/presets"
 )
 
 func TestComposeKafkaPreset(t *testing.T) {
@@ -30,8 +30,8 @@ func TestComposeKafkaPreset(t *testing.T) {
 	if !strings.Contains(content, "redpanda:") {
 		t.Error("expected redpanda service")
 	}
-	if !strings.Contains(content, "velonetics:") {
-		t.Error("expected velonetics service")
+	if !strings.Contains(content, "pucora:") {
+		t.Error("expected pucora service")
 	}
 	if !strings.Contains(content, "KAFKA_BROKERS") {
 		t.Error("expected KAFKA_BROKERS env")

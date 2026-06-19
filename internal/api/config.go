@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/velonetics/velonetics-configurator/internal/profile"
-	"github.com/velonetics/velonetics-configurator/internal/store"
+	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/store"
 )
 
 func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
@@ -17,9 +17,9 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/api/config")
 	path = strings.Trim(path, "/")
 
-	// GET /api/config/{name}/velonetics.json — raw gateway config
-	if strings.HasSuffix(path, "/velonetics.json") {
-		name := strings.TrimSuffix(path, "/velonetics.json")
+	// GET /api/config/{name}/pucora.json — raw gateway config
+	if strings.HasSuffix(path, "/pucora.json") {
+		name := strings.TrimSuffix(path, "/pucora.json")
 		if name == "" {
 			name = store.DefaultName
 		}
@@ -27,7 +27,7 @@ func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 			methodNotAllowed(w)
 			return
 		}
-		s.handleConfigVeloneticsJSON(w, r, name)
+		s.handleConfigPucoraJSON(w, r, name)
 		return
 	}
 
@@ -74,8 +74,8 @@ func (s *Server) handleConfigGet(w http.ResponseWriter, r *http.Request, name st
 	}
 
 	format := r.URL.Query().Get("format")
-	if format == "velonetics" || format == "velonetics.json" {
-		s.handleConfigVeloneticsJSON(w, r, name)
+	if format == "pucora" || format == "pucora.json" {
+		s.handleConfigPucoraJSON(w, r, name)
 		return
 	}
 
@@ -95,12 +95,12 @@ func (s *Server) handleConfigGet(w http.ResponseWriter, r *http.Request, name st
 	writeJSON(w, http.StatusOK, bundle)
 }
 
-func (s *Server) handleConfigVeloneticsJSON(w http.ResponseWriter, r *http.Request, name string) {
+func (s *Server) handleConfigPucoraJSON(w http.ResponseWriter, r *http.Request, name string) {
 	if err := s.requireAPIKey(r); err != nil {
 		writeError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
-	data, err := s.store.LoadVeloneticsJSON(name)
+	data, err := s.store.LoadPucoraJSON(name)
 	if err != nil {
 		writeError(w, http.StatusNotFound, err.Error())
 		return
@@ -152,6 +152,6 @@ type configSaveRequest struct {
 	Name          string                `json:"name"`
 	Profile       *profile.Profile      `json:"profile,omitempty"`
 	ProfileYAML   string                `json:"profile_yaml,omitempty"`
-	VeloneticsJSON map[string]any       `json:"velonetics_json,omitempty"`
+	PucoraJSON map[string]any       `json:"velonetics_json,omitempty"`
 	Compose       bool                  `json:"compose"`
 }

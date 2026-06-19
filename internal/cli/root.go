@@ -7,19 +7,19 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/velonetics/velonetics-configurator/internal/doctor"
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/presets"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
-	"github.com/velonetics/velonetics-configurator/internal/velocheck"
-	"github.com/velonetics/velonetics-configurator/internal/wizard"
+	"github.com/pucora/velonetics-configurator/internal/doctor"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/presets"
+	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/velocheck"
+	"github.com/pucora/velonetics-configurator/internal/wizard"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "velonetics-config",
-	Short: "Generate Velonetics gateway configuration from simple profiles",
-	Long: `Velonetics Configurator turns a simple YAML profile into a complete
-velonetics.json with routes, CORS, headers, auth, pub/sub, gRPC, and more.
+	Short: "Generate Pucora gateway configuration from simple profiles",
+	Long: `Pucora Configurator turns a simple YAML profile into a complete
+pucora.json with routes, CORS, headers, auth, pub/sub, gRPC, and more.
 
 Choose a preset, write a profile by hand, or run the interactive wizard.`,
 }
@@ -76,7 +76,7 @@ var initCmd = &cobra.Command{
 
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "Generate velonetics.json from a profile",
+	Short: "Generate pucora.json from a profile",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		profilePath, _ := cmd.Flags().GetString("file")
 		outputDir, _ := cmd.Flags().GetString("output")
@@ -113,7 +113,7 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Generated %s/velonetics.json\n", outputDir)
+		fmt.Printf("Generated %s/pucora.json\n", outputDir)
 		if len(out.Env) > 0 {
 			fmt.Printf("Generated %s/.env\n", outputDir)
 		}
@@ -125,17 +125,17 @@ var generateCmd = &cobra.Command{
 		}
 
 		if runCheck {
-			res, err := velocheck.Run(filepath.Join(outputDir, "velonetics.json"))
+			res, err := velocheck.Run(filepath.Join(outputDir, "pucora.json"))
 			if err != nil {
 				return err
 			}
 			if res.Error != "" && !res.OK {
-				fmt.Fprintf(os.Stderr, "velonetics check: %s\n", res.Error)
+				fmt.Fprintf(os.Stderr, "pucora check: %s\n", res.Error)
 				if res.Output != "" {
 					fmt.Fprint(os.Stderr, res.Output)
 				}
 			} else if res.OK {
-				fmt.Println("velonetics check: OK")
+				fmt.Println("pucora check: OK")
 			} else if res.Output != "" {
 				fmt.Print(res.Output)
 			}
@@ -143,8 +143,8 @@ var generateCmd = &cobra.Command{
 
 		fmt.Println()
 		fmt.Println("Next steps:")
-		fmt.Printf("  velonetics check -c %s/velonetics.json\n", outputDir)
-		fmt.Printf("  velonetics run -c %s/velonetics.json\n", outputDir)
+		fmt.Printf("  pucora check -c %s/pucora.json\n", outputDir)
+		fmt.Printf("  pucora run -c %s/pucora.json\n", outputDir)
 		return nil
 	},
 }
@@ -252,7 +252,7 @@ var presetsApplyCmd = &cobra.Command{
 			if err := generator.Write(genDir, out, p, withCompose); err != nil {
 				return err
 			}
-			fmt.Printf("Generated %s/velonetics.json from preset %q\n", genDir, name)
+			fmt.Printf("Generated %s/pucora.json from preset %q\n", genDir, name)
 			if withCompose || (p.Compose != nil && p.Compose.Enabled != nil && *p.Compose.Enabled) {
 				fmt.Printf("Generated %s/docker-compose.yml\n", genDir)
 			}
@@ -276,16 +276,16 @@ func init() {
 	initCmd.Flags().Bool("edit", false, "Open profile in $EDITOR after creation")
 
 	generateCmd.Flags().StringP("file", "f", "profile.yaml", "Input profile YAML file")
-	generateCmd.Flags().StringP("output", "o", "./output", "Output directory for velonetics.json")
+	generateCmd.Flags().StringP("output", "o", "./output", "Output directory for pucora.json")
 	generateCmd.Flags().Bool("compose", false, "Generate docker-compose.yml for local development")
-	generateCmd.Flags().Bool("stdout", false, "Print velonetics.json to stdout instead of writing files")
-	generateCmd.Flags().Bool("check", false, "Run velonetics check after generating (requires velonetics on PATH)")
+	generateCmd.Flags().Bool("stdout", false, "Print pucora.json to stdout instead of writing files")
+	generateCmd.Flags().Bool("check", false, "Run pucora check after generating (requires pucora on PATH)")
 
 	validateCmd.Flags().StringP("file", "f", "profile.yaml", "Input profile YAML file")
 	validateCmd.Flags().Bool("json", false, "Output validation result as JSON")
 
 	presetsApplyCmd.Flags().StringP("output", "o", "", "Save preset as profile YAML")
-	presetsApplyCmd.Flags().StringP("generate-dir", "g", "", "Generate velonetics.json to directory")
+	presetsApplyCmd.Flags().StringP("generate-dir", "g", "", "Generate pucora.json to directory")
 	presetsApplyCmd.Flags().Bool("compose", false, "Generate docker-compose.yml for local development")
 	presetsApplyCmd.Flags().Bool("edit", false, "Open saved profile in $EDITOR")
 

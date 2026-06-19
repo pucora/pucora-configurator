@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/presets"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/presets"
 )
 
 func TestGenerateRESTProxy(t *testing.T) {

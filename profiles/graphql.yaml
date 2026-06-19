@@ -1,4 +1,4 @@
-apiVersion: configurator.velonetics.io/v1
+apiVersion: configurator.pucora.io/v1
 kind: GatewayProfile
 metadata:
   name: GraphQL Gateway
@@ -33,7 +33,7 @@ routes:
       path: /graphql
       method: GET
       graphql_type: query
-      query_path: /etc/velonetics/graphql/queries/hero.graphql
+      query_path: /etc/pucora/graphql/queries/hero.graphql
       operation_name: Hero
       graphql_variables:
         episode: "{episode}"
@@ -49,7 +49,7 @@ routes:
       path: /graphql
       method: POST
       graphql_type: mutation
-      query_path: /etc/velonetics/graphql/mutations/review.graphql
+      query_path: /etc/pucora/graphql/mutations/review.graphql
       operation_name: CreateReviewForEpisode
       graphql_variables:
         ep: JEDI

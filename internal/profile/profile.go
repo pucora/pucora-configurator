@@ -7,10 +7,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const SchemaVersion = "https://velonetics.io/schema/v2.13/velonetics.json"
+const SchemaVersion = "https://pucora.io/schema/v2.13/pucora.json"
 
 // Profile is a simplified, user-friendly configuration format.
-// The generator expands it into a full velonetics.json.
+// The generator expands it into a full pucora.json.
 type Profile struct {
 	APIVersion string `yaml:"apiVersion" json:"apiVersion"`
 	Kind       string `yaml:"kind" json:"kind"`

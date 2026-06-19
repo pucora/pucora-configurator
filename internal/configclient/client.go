@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 	"gopkg.in/yaml.v3"
 )
 
@@ -37,7 +37,7 @@ type listResponse struct {
 type bundleResponse struct {
 	Name           string         `json:"name"`
 	ProfileYAML    string         `json:"profile_yaml"`
-	VeloneticsJSON map[string]any `json:"velonetics_json"`
+	PucoraJSON map[string]any `json:"velonetics_json"`
 	Env            map[string]string `json:"env"`
 	ComposeYAML    string         `json:"compose_yaml"`
 }
@@ -74,13 +74,13 @@ func (c *Client) Pull(name, outputDir string) error {
 		}
 	}
 
-	if bundle.VeloneticsJSON != nil {
-		data, err := json.MarshalIndent(bundle.VeloneticsJSON, "", "  ")
+	if bundle.PucoraJSON != nil {
+		data, err := json.MarshalIndent(bundle.PucoraJSON, "", "  ")
 		if err != nil {
 			return err
 		}
 		data = append(data, '\n')
-		if err := os.WriteFile(filepath.Join(outputDir, "velonetics.json"), data, 0o644); err != nil {
+		if err := os.WriteFile(filepath.Join(outputDir, "pucora.json"), data, 0o644); err != nil {
 			return err
 		}
 	}

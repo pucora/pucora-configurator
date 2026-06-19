@@ -81,6 +81,6 @@ export const api = {
       headers: apiKey ? { 'X-API-Key': apiKey } : undefined,
       body: JSON.stringify({ name, profile, compose }),
     }),
-  getConfigVeloneticsUrl: (name = 'default') =>
-    `${API_BASE || window.location.origin}/api/config/${name}/velonetics.json`,
+  getConfigPucoraUrl: (name = 'default') =>
+    `${API_BASE || window.location.origin}/api/config/${name}/pucora.json`,
 }

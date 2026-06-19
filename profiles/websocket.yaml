@@ -1,4 +1,4 @@
-apiVersion: configurator.velonetics.io/v1
+apiVersion: configurator.pucora.io/v1
 kind: GatewayProfile
 metadata:
   name: WebSocket Proxy

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/importer"
-	"github.com/velonetics/velonetics-configurator/internal/presets"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/importer"
+	"github.com/pucora/velonetics-configurator/internal/presets"
 )
 
 func TestRoundTripPresets(t *testing.T) {
@@ -24,7 +24,7 @@ func TestRoundTripPresets(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			res, err := importer.FromVeloneticsJSON(out.Config)
+			res, err := importer.FromPucoraJSON(out.Config)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -45,7 +45,7 @@ export function PublishPanel() {
         const imported = await api.importYaml(bundle.profile_yaml)
         useProfileStore.getState().setProfile(imported.profile)
       }
-      setSavedPullUrl(api.getConfigVeloneticsUrl(configName))
+      setSavedPullUrl(api.getConfigPucoraUrl(configName))
       setMessage(`Loaded "${configName}" from API`)
       setStatus('ok')
     } catch (e) {
@@ -54,7 +54,7 @@ export function PublishPanel() {
     }
   }
 
-  const gatewayPullUrl = savedPullUrl || api.getConfigVeloneticsUrl(configName)
+  const gatewayPullUrl = savedPullUrl || api.getConfigPucoraUrl(configName)
 
   return (
     <div className="px-4 py-3 border-b border-slate-800 bg-slate-900/30 space-y-2">

@@ -132,7 +132,7 @@ export interface Catalog {
 
 export function blankProfile(): GatewayProfile {
   return {
-    apiVersion: 'configurator.velonetics.io/v1',
+    apiVersion: 'configurator.pucora.io/v1',
     kind: 'GatewayProfile',
     metadata: { name: 'my-gateway', description: '' },
     gateway: { port: 8080, timeout: '3s', cache_ttl: '3600s' },

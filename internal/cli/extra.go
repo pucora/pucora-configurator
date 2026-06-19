@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/velonetics/velonetics-configurator/internal/configclient"
-	"github.com/velonetics/velonetics-configurator/internal/diff"
-	"github.com/velonetics/velonetics-configurator/internal/doctor"
-	"github.com/velonetics/velonetics-configurator/internal/generator"
-	"github.com/velonetics/velonetics-configurator/internal/importer"
-	"github.com/velonetics/velonetics-configurator/internal/profile"
+	"github.com/pucora/velonetics-configurator/internal/configclient"
+	"github.com/pucora/velonetics-configurator/internal/diff"
+	"github.com/pucora/velonetics-configurator/internal/doctor"
+	"github.com/pucora/velonetics-configurator/internal/generator"
+	"github.com/pucora/velonetics-configurator/internal/importer"
+	"github.com/pucora/velonetics-configurator/internal/profile"
 )
 
 func init() {
@@ -26,7 +26,7 @@ func init() {
 
 var importCmd = &cobra.Command{
 	Use:   "import",
-	Short: "Import velonetics.json into a simplified profile YAML",
+	Short: "Import pucora.json into a simplified profile YAML",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		input, _ := cmd.Flags().GetString("file")
 		output, _ := cmd.Flags().GetString("output")
@@ -40,7 +40,7 @@ var importCmd = &cobra.Command{
 			return fmt.Errorf("parse JSON: %w", err)
 		}
 
-		res, err := importer.FromVeloneticsJSON(cfg)
+		res, err := importer.FromPucoraJSON(cfg)
 		if err != nil {
 			return err
 		}
@@ -104,7 +104,7 @@ var diffCmd = &cobra.Command{
 			}
 		}
 		if len(summary.GeneratedDiff) > 0 {
-			fmt.Println("Generated velonetics.json differences:")
+			fmt.Println("Generated pucora.json differences:")
 			for _, line := range summary.GeneratedDiff {
 				fmt.Println(" ", line)
 			}
@@ -145,7 +145,7 @@ var doctorCmd = &cobra.Command{
 
 var watchCmd = &cobra.Command{
 	Use:   "watch",
-	Short: "Regenerate velonetics.json when the profile changes",
+	Short: "Regenerate pucora.json when the profile changes",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		profilePath, _ := cmd.Flags().GetString("file")
 		outputDir, _ := cmd.Flags().GetString("output")
@@ -169,7 +169,7 @@ var watchCmd = &cobra.Command{
 			if err := generator.Write(outputDir, out, p, withCompose); err != nil {
 				return err
 			}
-			fmt.Printf("[%s] regenerated %s/velonetics.json\n", abs, outputDir)
+			fmt.Printf("[%s] regenerated %s/pucora.json\n", abs, outputDir)
 			return nil
 		}
 
@@ -222,7 +222,7 @@ var configPushCmd = &cobra.Command{
 			return err
 		}
 		fmt.Printf("Pushed %q to %s/api/config/%s\n", p.Metadata.Name, apiURL, name)
-		fmt.Printf("Pull: curl -s %s/api/config/%s/velonetics.json\n", apiURL, name)
+		fmt.Printf("Pull: curl -s %s/api/config/%s/pucora.json\n", apiURL, name)
 		return nil
 	},
 }
@@ -279,7 +279,7 @@ var configListCmd = &cobra.Command{
 }
 
 func init() {
-	importCmd.Flags().StringP("file", "f", "velonetics.json", "Input velonetics.json file")
+	importCmd.Flags().StringP("file", "f", "pucora.json", "Input pucora.json file")
 	importCmd.Flags().StringP("output", "o", "profile.yaml", "Output profile YAML (- for stdout)")
 
 	diffCmd.Flags().String("file-a", "profile.yaml", "First profile file")
