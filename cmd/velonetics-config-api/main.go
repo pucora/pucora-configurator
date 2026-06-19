@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/api"
-	"github.com/pucora/velonetics-configurator/internal/store"
+	"github.com/pucora/pucora-configurator/internal/api"
+	"github.com/pucora/pucora-configurator/internal/store"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 	}
 
 	srv := api.NewServer(origins, st, os.Getenv("CONFIG_API_KEY"), os.Getenv("PUBLIC_BASE_URL"))
-	log.Printf("velonetics-config-api listening on :%s (store: %s)", port, storeDir)
+	log.Printf("pucora-config-api listening on :%s (store: %s)", port, storeDir)
 	if err := http.ListenAndServe(":"+port, srv.Handler()); err != nil {
 		log.Fatal(err)
 	}

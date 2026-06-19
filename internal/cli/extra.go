@@ -8,12 +8,12 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/pucora/velonetics-configurator/internal/configclient"
-	"github.com/pucora/velonetics-configurator/internal/diff"
-	"github.com/pucora/velonetics-configurator/internal/doctor"
-	"github.com/pucora/velonetics-configurator/internal/generator"
-	"github.com/pucora/velonetics-configurator/internal/importer"
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/configclient"
+	"github.com/pucora/pucora-configurator/internal/diff"
+	"github.com/pucora/pucora-configurator/internal/doctor"
+	"github.com/pucora/pucora-configurator/internal/generator"
+	"github.com/pucora/pucora-configurator/internal/importer"
+	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
 func init() {

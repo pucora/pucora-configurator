@@ -11,14 +11,14 @@ Copy mock service folders from Pucora CE examples into this directory:
 
 | Service | Copy from |
 |---------|-----------|
-| mock-backend | velonetics-ce-master/examples/websocket/mock-backend |
-| mock-webhook | velonetics-ce-master/examples/pubsub/async-kafka/mock-webhook |
+| mock-backend | pucora-ce/examples/websocket/mock-backend |
+| mock-webhook | pucora-ce/examples/pubsub/async-kafka/mock-webhook |
 
 Example:
 
 ` + "```bash" + `
-cp -r ../velonetics-ce-master/examples/websocket/mock-backend ./services/
-cp -r ../velonetics-ce-master/examples/pubsub/async-kafka/mock-webhook ./services/
+cp -r ../pucora-ce/examples/websocket/mock-backend ./services/
+cp -r ../pucora-ce/examples/pubsub/async-kafka/mock-webhook ./services/
 ` + "```" + `
 
 Then run:

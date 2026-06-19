@@ -1,6 +1,6 @@
 # Pucora Configurator
 
-A configuration tool that turns a simple YAML profile into a complete [Pucora](https://github.com/pucora/velonetics-ce-master) gateway setup — routes, CORS, allowed headers, JWT auth, pub/sub, gRPC, WebSockets, and more.
+A configuration tool that turns a simple YAML profile into a complete [Pucora](https://github.com/pucora/pucora-ce) gateway setup — routes, CORS, allowed headers, JWT auth, pub/sub, gRPC, WebSockets, and more.
 
 **No more hand-writing `extra_config` namespaces or remembering `disable_host_sanitize` rules.**
 
@@ -43,36 +43,36 @@ The UI provides:
 make build
 
 # Interactive wizard
-./bin/velonetics-config init -o my-profile.yaml
+./bin/pucora-config init -o my-profile.yaml
 
 # Or pick a preset
-./bin/velonetics-config presets list
-./bin/velonetics-config presets apply kafka-pubsub -g ./output --compose
+./bin/pucora-config presets list
+./bin/pucora-config presets apply kafka-pubsub -g ./output --compose
 docker compose -f ./output/docker-compose.yml up
 
 # Generate from your profile
-./bin/velonetics-config generate -f my-profile.yaml -o ./output
+./bin/pucora-config generate -f my-profile.yaml -o ./output
 
 # Validate before generating
-./bin/velonetics-config validate -f my-profile.yaml
-./bin/velonetics-config validate -f my-profile.yaml --json
+./bin/pucora-config validate -f my-profile.yaml
+./bin/pucora-config validate -f my-profile.yaml --json
 
 # Import existing pucora.json back to profile YAML
-./bin/velonetics-config import -f ./output/pucora.json -o profile.yaml
+./bin/pucora-config import -f ./output/pucora.json -o profile.yaml
 
 # Compare two profiles
-./bin/velonetics-config diff --file-a profile.yaml --file-b profile-v2.yaml
+./bin/pucora-config diff --file-a profile.yaml --file-b profile-v2.yaml
 
 # Advisory warnings (beyond strict validation)
-./bin/velonetics-config doctor -f my-profile.yaml
+./bin/pucora-config doctor -f my-profile.yaml
 
 # Watch profile and regenerate on save
-./bin/velonetics-config watch -f my-profile.yaml -o ./output
+./bin/pucora-config watch -f my-profile.yaml -o ./output
 
 # Push/pull from config store API
-./bin/velonetics-config config push -f my-profile.yaml -n prod
-./bin/velonetics-config config pull prod -o ./output
-./bin/velonetics-config config list
+./bin/pucora-config config push -f my-profile.yaml -n prod
+./bin/pucora-config config pull prod -o ./output
+./bin/pucora-config config list
 ```
 
 Run the gateway:
@@ -150,10 +150,10 @@ See [`profiles/`](profiles/) for full examples.
 
 ```bash
 # Save preset as editable profile
-velonetics-config presets apply kafka-pubsub -o profile.yaml
+pucora-config presets apply kafka-pubsub -o profile.yaml
 
 # Generate pucora.json + docker-compose for local dev
-velonetics-config presets apply kafka-pubsub -g ./output --compose
+pucora-config presets apply kafka-pubsub -g ./output --compose
 ```
 
 ## Config store API (GET / POST)
@@ -190,7 +190,7 @@ Or upload raw `pucora.json`:
 ```bash
 curl -X POST http://localhost:8081/api/config/prod \
   -H "Content-Type: application/json" \
-  -d '{"velonetics_json": {"version": 3, "port": 8080, "endpoints": []}}'
+  -d '{"pucora_json": {"version": 3, "port": 8080, "endpoints": []}}'
 ```
 
 ### GET — pull config for gateway
@@ -286,10 +286,10 @@ The generator automatically sets:
 ## Project layout
 
 ```
-velonetics-configurator/
+pucora-configurator/
 ├── cmd/
-│   ├── velonetics-config/     # CLI entrypoint
-│   └── velonetics-config-api/ # REST API for web UI
+│   ├── pucora-config/     # CLI entrypoint
+│   └── pucora-config-api/ # REST API for web UI
 ├── web/                       # React visual configurator
 ├── deploy/                    # Docker compose + Dockerfiles
 ├── internal/

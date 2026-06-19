@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/compose"
-	"github.com/pucora/velonetics-configurator/internal/generator"
-	"github.com/pucora/velonetics-configurator/internal/profile"
-	"github.com/pucora/velonetics-configurator/internal/store"
+	"github.com/pucora/pucora-configurator/internal/compose"
+	"github.com/pucora/pucora-configurator/internal/generator"
+	"github.com/pucora/pucora-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/store"
 	"gopkg.in/yaml.v3"
 )
 
@@ -38,7 +38,7 @@ func (s *Server) buildBundleFromRequest(name string, req configSaveRequest) (*st
 		}
 	default:
 		return nil, http.StatusBadRequest, profile.ValidationErrors{{
-			Field: "profile", Message: "profile, profile_yaml, or velonetics_json is required",
+			Field: "profile", Message: "profile, profile_yaml, or pucora_json is required",
 		}}
 	}
 
@@ -94,7 +94,7 @@ func (s *Server) configURLs(name string) map[string]string {
 	}
 	return map[string]string{
 		"bundle":          prefix,
-		"velonetics_json": prefix + "/pucora.json",
+		"pucora_json": prefix + "/pucora.json",
 		"profile_yaml":    prefix + "?format=yaml",
 	}
 }

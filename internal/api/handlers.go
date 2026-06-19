@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/catalog"
-	"github.com/pucora/velonetics-configurator/internal/compose"
-	"github.com/pucora/velonetics-configurator/internal/doctor"
-	"github.com/pucora/velonetics-configurator/internal/generator"
-	"github.com/pucora/velonetics-configurator/internal/importer"
-	"github.com/pucora/velonetics-configurator/internal/presets"
-	"github.com/pucora/velonetics-configurator/internal/profile"
-	"github.com/pucora/velonetics-configurator/internal/store"
+	"github.com/pucora/pucora-configurator/internal/catalog"
+	"github.com/pucora/pucora-configurator/internal/compose"
+	"github.com/pucora/pucora-configurator/internal/doctor"
+	"github.com/pucora/pucora-configurator/internal/generator"
+	"github.com/pucora/pucora-configurator/internal/importer"
+	"github.com/pucora/pucora-configurator/internal/presets"
+	"github.com/pucora/pucora-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/store"
 	"gopkg.in/yaml.v3"
 )
 
@@ -178,7 +178,7 @@ func (s *Server) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	yamlData, _ := yaml.Marshal(&req.Profile)
 	resp := map[string]any{
 		"valid":           true,
-		"velonetics_json": out.Config,
+		"pucora_json": out.Config,
 		"profile_yaml":    string(yamlData),
 		"env":             out.Env,
 		"warnings":        out.Warnings,

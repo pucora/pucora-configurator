@@ -8,7 +8,7 @@ func ApplyDefaults(p *Profile) {
 		p.Kind = "GatewayProfile"
 	}
 	if p.Metadata.Name == "" {
-		p.Metadata.Name = "velonetics-gateway"
+		p.Metadata.Name = "pucora-gateway"
 	}
 	if p.Gateway.Port == 0 {
 		p.Gateway.Port = 8080

@@ -12,7 +12,7 @@ interface ProfileState {
   validationErrors: ValidationError[]
   advisories: Advisory[]
   preview: {
-    veloneticsJson: string
+    pucoraJson: string
     profileYaml: string
     env: Record<string, string>
     composeYaml: string
@@ -74,7 +74,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       validationErrors: [],
       advisories: res.advisories || [],
       preview: {
-        veloneticsJson: JSON.stringify(res.velonetics_json, null, 2),
+        pucoraJson: JSON.stringify(res.pucora_json, null, 2),
         profileYaml: res.profile_yaml,
         env: res.env || {},
         composeYaml: res.compose_yaml || '',

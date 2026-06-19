@@ -3,11 +3,11 @@ WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -o /velonetics-config-api ./cmd/velonetics-config-api
+RUN CGO_ENABLED=0 go build -o /pucora-config-api ./cmd/pucora-config-api
 
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates
-COPY --from=builder /velonetics-config-api /usr/local/bin/velonetics-config-api
+COPY --from=builder /pucora-config-api /usr/local/bin/pucora-config-api
 EXPOSE 8081
 ENV PORT=8081
-CMD ["velonetics-config-api"]
+CMD ["pucora-config-api"]

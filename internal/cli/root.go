@@ -7,16 +7,16 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/pucora/velonetics-configurator/internal/doctor"
-	"github.com/pucora/velonetics-configurator/internal/generator"
-	"github.com/pucora/velonetics-configurator/internal/presets"
-	"github.com/pucora/velonetics-configurator/internal/profile"
-	"github.com/pucora/velonetics-configurator/internal/velocheck"
-	"github.com/pucora/velonetics-configurator/internal/wizard"
+	"github.com/pucora/pucora-configurator/internal/doctor"
+	"github.com/pucora/pucora-configurator/internal/generator"
+	"github.com/pucora/pucora-configurator/internal/presets"
+	"github.com/pucora/pucora-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/velocheck"
+	"github.com/pucora/pucora-configurator/internal/wizard"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "velonetics-config",
+	Use:   "pucora-config",
 	Short: "Generate Pucora gateway configuration from simple profiles",
 	Long: `Pucora Configurator turns a simple YAML profile into a complete
 pucora.json with routes, CORS, headers, auth, pub/sub, gRPC, and more.
@@ -69,7 +69,7 @@ var initCmd = &cobra.Command{
 			}
 		}
 
-		fmt.Println("Run: velonetics-config generate -f", output, "-o ./output")
+		fmt.Println("Run: pucora-config generate -f", output, "-o ./output")
 		return nil
 	},
 }

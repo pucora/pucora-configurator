@@ -2,7 +2,7 @@ apiVersion: configurator.pucora.io/v1
 kind: GatewayProfile
 metadata:
   name: my-gateway
-  description: Edit this file, then run velonetics-config generate -f profile.yaml -o ./output
+  description: Edit this file, then run pucora-config generate -f profile.yaml -o ./output
 
 gateway:
   port: 8080

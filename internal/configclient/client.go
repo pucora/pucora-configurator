@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/profile"
 	"gopkg.in/yaml.v3"
 )
 
-// Client talks to the velonetics-config-api config store.
+// Client talks to the pucora-config-api config store.
 type Client struct {
 	BaseURL string
 	APIKey  string
@@ -37,7 +37,7 @@ type listResponse struct {
 type bundleResponse struct {
 	Name           string         `json:"name"`
 	ProfileYAML    string         `json:"profile_yaml"`
-	PucoraJSON map[string]any `json:"velonetics_json"`
+	PucoraJSON map[string]any `json:"pucora_json"`
 	Env            map[string]string `json:"env"`
 	ComposeYAML    string         `json:"compose_yaml"`
 }

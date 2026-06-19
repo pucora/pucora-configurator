@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
 // Advisory is a non-fatal configuration recommendation.

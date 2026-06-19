@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pucora/velonetics-configurator/internal/api"
-	"github.com/pucora/velonetics-configurator/internal/profile"
-	"github.com/pucora/velonetics-configurator/internal/store"
+	"github.com/pucora/pucora-configurator/internal/api"
+	"github.com/pucora/pucora-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/store"
 )
 
 func testServer(t *testing.T) *api.Server {

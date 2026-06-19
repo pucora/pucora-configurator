@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
 const defaultImage = "niteesh20/pucora:2.0.0"
@@ -119,11 +119,11 @@ func Render(p *profile.Profile, env map[string]string) string {
 		sb.WriteString(mockWebhookService())
 	}
 
-	sb.WriteString(veloneticsService(image, p, env, req, exposeMetrics))
+	sb.WriteString(pucoraService(image, p, env, req, exposeMetrics))
 	return sb.String()
 }
 
-func veloneticsService(image string, p *profile.Profile, env map[string]string, req Requirements, exposeMetrics bool) string {
+func pucoraService(image string, p *profile.Profile, env map[string]string, req Requirements, exposeMetrics bool) string {
 	port := p.Gateway.Port
 	if port == 0 {
 		port = 8080

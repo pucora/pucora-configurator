@@ -1,14 +1,14 @@
 .PHONY: build test install clean presets dev-api dev-web build-api build-web build-all docker-up
 
-BINARY := velonetics-config
-API_BINARY := velonetics-config-api
+BINARY := pucora-config
+API_BINARY := pucora-config-api
 BUILD_DIR := ./bin
 
 build:
-	go build -o $(BUILD_DIR)/$(BINARY) ./cmd/velonetics-config
+	go build -o $(BUILD_DIR)/$(BINARY) ./cmd/pucora-config
 
 build-api:
-	go build -o $(BUILD_DIR)/$(API_BINARY) ./cmd/velonetics-config-api
+	go build -o $(BUILD_DIR)/$(API_BINARY) ./cmd/pucora-config-api
 
 build-web:
 	cd web && npm run build
@@ -16,11 +16,11 @@ build-web:
 build-all: build build-api build-web
 
 install:
-	go install ./cmd/velonetics-config
-	go install ./cmd/velonetics-config-api
+	go install ./cmd/pucora-config
+	go install ./cmd/pucora-config-api
 
 dev-api:
-	go run ./cmd/velonetics-config-api
+	go run ./cmd/pucora-config-api
 
 dev-web:
 	cd web && npm run dev

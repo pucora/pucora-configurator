@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
 //go:embed profiles/*.yaml

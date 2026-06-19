@@ -3,7 +3,7 @@ package store_test
 import (
 	"testing"
 
-	"github.com/pucora/velonetics-configurator/internal/store"
+	"github.com/pucora/pucora-configurator/internal/store"
 )
 
 func TestStoreSaveLoad(t *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/generator"
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/generator"
+	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
 // Summary describes differences between two profiles or generated configs.

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pucora/velonetics-configurator/internal/compose"
-	"github.com/pucora/velonetics-configurator/internal/presets"
+	"github.com/pucora/pucora-configurator/internal/compose"
+	"github.com/pucora/pucora-configurator/internal/presets"
 )
 
 func TestComposeKafkaPreset(t *testing.T) {

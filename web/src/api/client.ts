@@ -18,7 +18,7 @@ export interface ConfigBundle {
   name: string
   updated_at: string
   profile_yaml?: string
-  velonetics_json: Record<string, unknown>
+  pucora_json: Record<string, unknown>
   env?: Record<string, string>
   compose_yaml?: string
 }
@@ -28,7 +28,7 @@ export interface PublishResult {
   name: string
   get_url: {
     bundle: string
-    velonetics_json: string
+    pucora_json: string
     profile_yaml: string
   }
   updated_at: string
@@ -47,7 +47,7 @@ export const api = {
   generate: (profile: GatewayProfile, compose = false) =>
     request<{
       valid: boolean
-      velonetics_json: Record<string, unknown>
+      pucora_json: Record<string, unknown>
       profile_yaml: string
       env: Record<string, string>
       compose_yaml?: string

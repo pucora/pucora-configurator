@@ -1,4 +1,4 @@
-module github.com/pucora/velonetics-configurator
+module github.com/pucora/pucora-configurator
 
 go 1.25.3
 

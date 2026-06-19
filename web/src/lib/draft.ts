@@ -1,4 +1,4 @@
-const DRAFT_KEY = 'velonetics-configurator-draft'
+const DRAFT_KEY = 'pucora-configurator-draft'
 
 import type { GatewayProfile } from '../types/profile'
 

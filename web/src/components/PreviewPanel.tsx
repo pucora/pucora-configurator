@@ -19,7 +19,7 @@ export function PreviewPanel() {
   const downloadZip = async () => {
     if (!preview) return
     const zip = new JSZip()
-    zip.file('pucora.json', preview.veloneticsJson)
+    zip.file('pucora.json', preview.pucoraJson)
     zip.file('profile.yaml', preview.profileYaml)
     if (Object.keys(preview.env).length) {
       zip.file('.env', Object.entries(preview.env).map(([k, v]) => `${k}=${v}`).join('\n'))
@@ -31,7 +31,7 @@ export function PreviewPanel() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'velonetics-config.zip'
+    a.download = 'pucora-config.zip'
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -64,7 +64,7 @@ export function PreviewPanel() {
             <>
               <button
                 type="button"
-                onClick={() => download('pucora.json', preview.veloneticsJson)}
+                onClick={() => download('pucora.json', preview.pucoraJson)}
                 className="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
               >
                 Download JSON
@@ -97,7 +97,7 @@ export function PreviewPanel() {
         {!preview
           ? 'Click "Generate preview" to see output'
           : tab === 'json'
-            ? preview.veloneticsJson
+            ? preview.pucoraJson
             : tab === 'yaml'
               ? preview.profileYaml
               : preview.composeYaml || '# Enable compose to generate docker-compose.yml'}

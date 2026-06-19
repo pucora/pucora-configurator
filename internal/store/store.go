@@ -18,7 +18,7 @@ type Bundle struct {
 	Name           string            `json:"name"`
 	UpdatedAt      time.Time         `json:"updated_at"`
 	ProfileYAML    string            `json:"profile_yaml,omitempty"`
-	PucoraJSON map[string]any    `json:"velonetics_json"`
+	PucoraJSON map[string]any    `json:"pucora_json"`
 	Env            map[string]string `json:"env,omitempty"`
 	ComposeYAML    string            `json:"compose_yaml,omitempty"`
 }

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/pucora/velonetics-configurator/internal/generator"
-	"github.com/pucora/velonetics-configurator/internal/importer"
-	"github.com/pucora/velonetics-configurator/internal/presets"
+	"github.com/pucora/pucora-configurator/internal/generator"
+	"github.com/pucora/pucora-configurator/internal/importer"
+	"github.com/pucora/pucora-configurator/internal/presets"
 )
 
 func TestRoundTripPresets(t *testing.T) {

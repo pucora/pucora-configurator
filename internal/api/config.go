@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/profile"
-	"github.com/pucora/velonetics-configurator/internal/store"
+	"github.com/pucora/pucora-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/store"
 )
 
 func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
@@ -152,6 +152,6 @@ type configSaveRequest struct {
 	Name          string                `json:"name"`
 	Profile       *profile.Profile      `json:"profile,omitempty"`
 	ProfileYAML   string                `json:"profile_yaml,omitempty"`
-	PucoraJSON map[string]any       `json:"velonetics_json,omitempty"`
+	PucoraJSON map[string]any       `json:"pucora_json,omitempty"`
 	Compose       bool                  `json:"compose"`
 }

@@ -7,7 +7,7 @@ function blankAgent(): AsyncAgent {
     consumer: { topic: 'events', workers: 2, timeout: '2s' },
     backend: { host: 'http://localhost:8081', path: '/ingest', method: 'POST' },
     connection: { max_retries: 3, backoff_strategy: 'linear', health_interval: '10s' },
-    kafka: { brokers: ['localhost:9092'], group_id: 'my-group', client_id: 'velonetics_async' },
+    kafka: { brokers: ['localhost:9092'], group_id: 'my-group', client_id: 'pucora_async' },
   }
 }
 

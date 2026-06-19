@@ -27,7 +27,7 @@ export function PublishPanel() {
     setStatus('loading')
     try {
       const res = await api.publishConfig(profile, configName, composeEnabled, apiKey || undefined)
-      setSavedPullUrl(res.get_url.velonetics_json)
+      setSavedPullUrl(res.get_url.pucora_json)
       setMessage(`Saved as "${res.name}"`)
       setStatus('ok')
       refreshList()

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pucora/velonetics-configurator/internal/compose"
-	"github.com/pucora/velonetics-configurator/internal/profile"
+	"github.com/pucora/pucora-configurator/internal/compose"
+	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
 type Output struct {
