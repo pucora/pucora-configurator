@@ -1,6 +1,7 @@
 import type { Catalog } from '../types/profile'
 import { TagInput } from './TagInput'
 import { useProfileStore } from '../store/profileStore'
+import { BackendFrameworkPanel } from './BackendFrameworkPanel'
 
 interface GatewaySidebarProps {
   catalog: Catalog | null
@@ -57,6 +58,8 @@ export function GatewaySidebar({ catalog }: GatewaySidebarProps) {
           />
         </div>
       </div>
+
+      <BackendFrameworkPanel catalog={catalog} />
 
       <div className="border-t border-slate-800 pt-4 space-y-3">
         <h3 className="text-xs font-semibold text-slate-400 uppercase">gRPC catalog</h3>

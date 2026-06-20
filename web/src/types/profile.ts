@@ -1,7 +1,7 @@
 export interface GatewayProfile {
   apiVersion: string
   kind: string
-  metadata: { name: string; description?: string }
+  metadata: { name: string; description?: string; backend_framework?: string }
   gateway: { port: number; timeout?: string; cache_ttl?: string; write_timeout?: string }
   cors?: CORS
   telemetry?: Telemetry
@@ -128,6 +128,26 @@ export interface Catalog {
     allow_headers: string[]
   }>
   fields: Record<string, { label: string; help: string; type: string }>
+  backendFrameworks?: BackendFramework[]
+}
+
+export interface BackendFramework {
+  id: string
+  label: string
+  description: string
+  language: string
+  default_port: number
+  recommendations: FrameworkRecommendations
+}
+
+export interface FrameworkRecommendations {
+  gateway?: Partial<GatewayProfile['gateway']>
+  cors?: Partial<CORS>
+  telemetry?: Partial<Telemetry>
+  compose?: Partial<Compose>
+  grpc?: { catalog?: string[] }
+  routes?: Partial<Route>[]
+  tips: string[]
 }
 
 export function blankProfile(): GatewayProfile {

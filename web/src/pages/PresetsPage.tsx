@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
-import type { Preset } from '../types/profile'
+import type { Catalog, Preset } from '../types/profile'
 import { blankProfile } from '../types/profile'
 import { useProfileStore } from '../store/profileStore'
+import { BackendFrameworkPanel } from '../components/BackendFrameworkPanel'
+import {
+  applyFrameworkRecommendations,
+  findFramework,
+} from '../lib/frameworkRecommendations'
 
 interface PresetsPageProps {
   onStart: () => void
@@ -10,25 +15,37 @@ interface PresetsPageProps {
 
 export function PresetsPage({ onStart }: PresetsPageProps) {
   const [presets, setPresets] = useState<Preset[]>([])
+  const [catalog, setCatalog] = useState<Catalog | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { setProfile } = useProfileStore()
+  const { profile, setProfile } = useProfileStore()
+  const frameworkId = profile.metadata.backend_framework
 
   useEffect(() => {
-    api.presets()
-      .then(setPresets)
+    Promise.all([api.presets(), api.catalog()])
+      .then(([presetList, cat]) => {
+        setPresets(presetList)
+        setCatalog(cat)
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
 
+  const applySelectedFramework = (base: ReturnType<typeof blankProfile>, replaceRoutes: boolean) => {
+    const fw = findFramework(catalog?.backendFrameworks, frameworkId)
+    if (!fw) return base
+    return applyFrameworkRecommendations(base, fw, { replaceRoutes, fillEmptyOnly: !replaceRoutes })
+  }
+
   const loadPreset = async (name: string) => {
-    const profile = await api.preset(name)
-    setProfile(profile)
+    let next = await api.preset(name)
+    next = applySelectedFramework(next, false)
+    setProfile(next)
     onStart()
   }
 
   const startBlank = () => {
-    setProfile(blankProfile())
+    setProfile(applySelectedFramework(blankProfile(), true))
     onStart()
   }
 
@@ -46,13 +63,26 @@ export function PresetsPage({ onStart }: PresetsPageProps) {
           </div>
         )}
 
+        <div className="mb-8 p-5 rounded-xl border border-slate-800 bg-slate-900/40">
+          <BackendFrameworkPanel catalog={catalog} compact />
+          {catalog?.backendFrameworks && catalog.backendFrameworks.length > 0 && (
+            <p className="text-xs text-slate-500 mt-3 normal-case">
+              Optional — pre-fills CORS, headers, routes, and timeouts when you start.
+              Change or clear anytime in the gateway sidebar.
+            </p>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={startBlank}
           className="w-full mb-8 p-6 rounded-xl border-2 border-dashed border-cyan-700/50 bg-cyan-950/20 hover:bg-cyan-950/40 text-left transition-colors"
         >
           <span className="text-lg font-semibold text-cyan-200">Start from scratch</span>
-          <p className="text-sm text-slate-400 mt-1">Blank gateway with sensible defaults (port 8080, CORS, logging)</p>
+          <p className="text-sm text-slate-400 mt-1">
+            Blank gateway with sensible defaults
+            {frameworkId ? ' + framework recommendations' : ' (port 8080, CORS, logging)'}
+          </p>
         </button>
 
         <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Or choose a preset</h2>

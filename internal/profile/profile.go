@@ -26,8 +26,9 @@ type Profile struct {
 }
 
 type Meta struct {
-	Name        string `yaml:"name" json:"name"`
-	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+	Name             string `yaml:"name" json:"name"`
+	Description      string `yaml:"description,omitempty" json:"description,omitempty"`
+	BackendFramework string `yaml:"backend_framework,omitempty" json:"backend_framework,omitempty"`
 }
 
 type Gateway struct {

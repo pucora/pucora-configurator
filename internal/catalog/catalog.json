@@ -216,6 +216,320 @@
       }
     }
   ],
+  "backendFrameworks": [
+    {
+      "id": "express",
+      "label": "Express / Node.js",
+      "description": "REST API with Express, Fastify, or Koa",
+      "language": "JavaScript / TypeScript",
+      "default_port": 3000,
+      "recommendations": {
+        "gateway": { "timeout": "5s", "cache_ttl": "300s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000", "http://localhost:5173"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept", "X-Request-ID"]
+        },
+        "compose": { "enabled": true, "mock_backend": true },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept", "X-Request-ID"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:3000", "path": "/{path}" }
+          },
+          {
+            "path": "/api/{path}",
+            "method": "POST",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "backend": { "type": "http", "host": "http://localhost:3000", "path": "/{path}", "method": "POST" }
+          }
+        ],
+        "tips": [
+          "Forward Authorization and Content-Type — blocked headers never reach Express",
+          "Gateway /api prefix maps to backend /{path} when your app has no global prefix",
+          "Use 5s+ gateway timeout for long-running Node handlers",
+          "Enable docker-compose to spin up a mock backend locally"
+        ]
+      }
+    },
+    {
+      "id": "nestjs",
+      "label": "NestJS",
+      "description": "Node.js API with global prefix (often /api)",
+      "language": "TypeScript",
+      "default_port": 3000,
+      "recommendations": {
+        "gateway": { "timeout": "5s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000", "http://localhost:5173"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"]
+        },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:3000", "path": "/api/{path}" }
+          }
+        ],
+        "tips": [
+          "Match NestJS global prefix — backend path often includes /api/{path}",
+          "Forward Authorization for JwtAuthGuard-protected controllers",
+          "NestJS ValidationPipe errors return JSON — keep output_encoding as json"
+        ]
+      }
+    },
+    {
+      "id": "fastapi",
+      "label": "FastAPI",
+      "description": "Python async REST API (uvicorn)",
+      "language": "Python",
+      "default_port": 8000,
+      "recommendations": {
+        "gateway": { "timeout": "10s", "cache_ttl": "300s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000", "http://localhost:5173"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"]
+        },
+        "compose": { "enabled": true, "mock_backend": true },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:8000", "path": "/{path}" }
+          },
+          {
+            "path": "/api/{path}",
+            "method": "POST",
+            "headers": { "forward": ["Authorization", "Content-Type"] },
+            "backend": { "type": "http", "host": "http://localhost:8000", "path": "/{path}", "method": "POST" }
+          }
+        ],
+        "tips": [
+          "FastAPI default port is 8000 (uvicorn --port 8000)",
+          "Use longer timeout (10s) for ML or DB-heavy endpoints",
+          "Forward query strings — FastAPI uses query params for filters",
+          "OpenAPI docs at /docs on the backend, not through the gateway unless proxied"
+        ]
+      }
+    },
+    {
+      "id": "django",
+      "label": "Django / DRF",
+      "description": "Django REST Framework",
+      "language": "Python",
+      "default_port": 8000,
+      "recommendations": {
+        "gateway": { "timeout": "8s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept", "X-CSRFToken"]
+        },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:8000", "path": "/api/{path}" }
+          }
+        ],
+        "tips": [
+          "Include X-CSRFToken in CORS if using session auth from a browser SPA",
+          "DRF often mounts at /api/ — align backend path with urls.py",
+          "Forward Authorization for TokenAuthentication / JWT"
+        ]
+      }
+    },
+    {
+      "id": "spring-boot",
+      "label": "Spring Boot",
+      "description": "Java REST API (Tomcat / embedded server)",
+      "language": "Java / Kotlin",
+      "default_port": 8081,
+      "recommendations": {
+        "gateway": { "timeout": "8s", "cache_ttl": "600s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000", "http://localhost:5173"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept", "X-Requested-With"]
+        },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept", "X-Request-ID"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:8081", "path": "/{path}" }
+          }
+        ],
+        "tips": [
+          "Run Spring on 8081 — gateway uses 8080 by default",
+          "Forward X-Request-ID for distributed tracing (Micrometer / Sleuth)",
+          "Spring Security expects Authorization header for Bearer tokens",
+          "Consider rate limiting on public endpoints"
+        ]
+      }
+    },
+    {
+      "id": "go-gin",
+      "label": "Go (Gin / Chi / Echo)",
+      "description": "Go HTTP microservice",
+      "language": "Go",
+      "default_port": 8081,
+      "recommendations": {
+        "gateway": { "timeout": "3s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"]
+        },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:8081", "path": "/{path}" }
+          }
+        ],
+        "tips": [
+          "Go services are fast — 3s gateway timeout is usually enough",
+          "Run backend on 8081 to avoid clashing with gateway port 8080",
+          "Chi/Gin middleware often reads Authorization from headers"
+        ]
+      }
+    },
+    {
+      "id": "graphql-apollo",
+      "label": "GraphQL (Apollo / Yoga)",
+      "description": "GraphQL server on HTTP POST",
+      "language": "JavaScript / TypeScript",
+      "default_port": 4000,
+      "recommendations": {
+        "gateway": { "timeout": "15s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000", "http://localhost:5173"],
+          "allow_methods": ["GET", "POST", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type"]
+        },
+        "routes": [
+          {
+            "path": "/graphql",
+            "method": "POST",
+            "headers": { "forward": ["Content-Type", "Authorization"] },
+            "query_strings": { "forward": ["query", "operationName", "variables"] },
+            "backend": { "type": "http", "host": "http://localhost:4000", "path": "/graphql", "method": "POST" }
+          }
+        ],
+        "tips": [
+          "Transparent POST proxy is simplest for Apollo Server",
+          "Forward Authorization for authenticated resolvers",
+          "Use 15s timeout for complex GraphQL queries",
+          "For persisted queries, also forward APQ-related headers if used"
+        ]
+      }
+    },
+    {
+      "id": "grpc",
+      "label": "gRPC (Go / Java)",
+      "description": "gRPC service with protobuf",
+      "language": "Go / Java / any",
+      "default_port": 50051,
+      "recommendations": {
+        "gateway": { "timeout": "5s" },
+        "grpc": { "catalog": ["./grpc/catalog.pb"] },
+        "routes": [
+          {
+            "path": "/grpc/{service}",
+            "method": "GET",
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "grpc", "host": "localhost:50051", "path": "/package.Service/Method" }
+          }
+        ],
+        "tips": [
+          "Add compiled .pb descriptor to grpc.catalog",
+          "Map query params to proto fields via input_mapping",
+          "gRPC host is host:port without scheme"
+        ]
+      }
+    },
+    {
+      "id": "rails",
+      "label": "Ruby on Rails",
+      "description": "Rails API mode",
+      "language": "Ruby",
+      "default_port": 3000,
+      "recommendations": {
+        "gateway": { "timeout": "8s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept"]
+        },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:3000", "path": "/api/{path}" }
+          }
+        ],
+        "tips": [
+          "Rails API routes often live under /api in routes.rb",
+          "Forward Authorization for Devise / JWT auth",
+          "Rails dev server (Puma) runs on port 3000 by default"
+        ]
+      }
+    },
+    {
+      "id": "laravel",
+      "label": "Laravel",
+      "description": "PHP Laravel API (artisan serve)",
+      "language": "PHP",
+      "default_port": 8000,
+      "recommendations": {
+        "gateway": { "timeout": "8s" },
+        "cors": {
+          "enabled": true,
+          "allow_origins": ["http://localhost:3000"],
+          "allow_methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+          "allow_headers": ["Origin", "Authorization", "Content-Type", "Accept", "X-Requested-With"]
+        },
+        "routes": [
+          {
+            "path": "/api/{path}",
+            "method": "GET",
+            "headers": { "forward": ["Authorization", "Content-Type", "Accept"] },
+            "query_strings": { "forward": ["*"] },
+            "backend": { "type": "http", "host": "http://localhost:8000", "path": "/api/{path}" }
+          }
+        ],
+        "tips": [
+          "php artisan serve defaults to port 8000",
+          "Laravel Sanctum/Passport need Authorization forwarded",
+          "API routes in routes/api.php are prefixed with /api"
+        ]
+      }
+    }
+  ],
   "enums": {
     "httpMethods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
     "jwtAlgorithms": ["RS256", "RS384", "RS512", "HS256", "HS384", "HS512", "ES256", "ES384", "ES512"],
