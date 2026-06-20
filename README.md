@@ -255,7 +255,7 @@ The compose generator auto-detects required services from your profile:
 ```yaml
 compose:
   enabled: true
-  image: niteesh20/pucora:2.0.0
+  image: pucora/pucora:2.0.0
   mock_backend: true
   expose_metrics: true
 ```

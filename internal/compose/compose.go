@@ -9,7 +9,7 @@ import (
 	"github.com/pucora/pucora-configurator/internal/profile"
 )
 
-const defaultImage = "niteesh20/pucora:2.0.0"
+const defaultImage = "pucora/pucora:2.0.0"
 
 type Requirements struct {
 	Kafka        bool

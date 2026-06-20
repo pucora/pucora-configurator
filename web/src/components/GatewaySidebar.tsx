@@ -191,7 +191,7 @@ export function GatewaySidebar({ catalog }: GatewaySidebarProps) {
                   p.compose.image = e.target.value || undefined
                   return p
                 })}
-                placeholder="niteesh20/pucora:2.0.0"
+                placeholder="pucora/pucora:2.0.0"
               />
             </div>
             <label className="flex items-center gap-2 normal-case text-sm text-slate-300">
