@@ -15,7 +15,7 @@ func TestStoreSaveLoad(t *testing.T) {
 
 	bundle := store.Bundle{
 		Name:           "prod",
-		ProfileYAML:    "apiVersion: configurator.pucora.io/v1\n",
+		ProfileYAML:    "apiVersion: configurator.pucora.in/v1\n",
 		PucoraJSON: map[string]any{"version": 3, "port": 8080},
 		Env:            map[string]string{"KAFKA_BROKERS": "localhost:9092"},
 		ComposeYAML:    "services:\n  pucora:\n    image: test\n",

@@ -96,10 +96,10 @@ This tool hides that complexity behind a **simple profile format** and **ready-m
 
 ## Profile format
 
-Profiles use `apiVersion: configurator.pucora.io/v1` and a flat, readable structure:
+Profiles use `apiVersion: configurator.pucora.in/v1` and a flat, readable structure:
 
 ```yaml
-apiVersion: configurator.pucora.io/v1
+apiVersion: configurator.pucora.in/v1
 kind: GatewayProfile
 metadata:
   name: My API Gateway

@@ -21,7 +21,7 @@ func FromPucoraJSON(cfg map[string]any) (*Result, error) {
 
 	res := &Result{
 		Profile: profile.Profile{
-			APIVersion: "configurator.pucora.io/v1",
+			APIVersion: "configurator.pucora.in/v1",
 			Kind:       "GatewayProfile",
 		},
 	}

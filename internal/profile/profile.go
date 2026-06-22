@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const SchemaVersion = "https://pucora.io/schema/v2.13/pucora.json"
+const SchemaVersion = "https://pucora.in/schema/v2.13/pucora.json"
 
 // Profile is a simplified, user-friendly configuration format.
 // The generator expands it into a full pucora.json.
